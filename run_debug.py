@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 设置DEBUG环境变量为True
-os.environ['DEBUG'] = 'true'
+os.environ["DEBUG"] = "true"
 
 # 导入并运行start.py
 from start import main
