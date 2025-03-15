@@ -58,13 +58,13 @@ def init_logging():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_file = os.path.join(log_dir, f"acc_{timestamp}.log")
 
-    # 配置日志级别
-    # 从环境变量获取日志级别，默认INFO
-    log_level = os.getenv("LOG_LEVEL", "INFO")  # 默认值已内置在代码中
-    numeric_level = getattr(logging, log_level.upper(), logging.INFO)
-
-    # 从环境变量获取调试模式，默认false
+    # 修复日志级别设置逻辑
     debug_mode = os.getenv("DEBUG", "false").lower() == "true"
+    log_level = os.getenv("LOG_LEVEL", "DEBUG" if debug_mode else "INFO")  # 修改点
+
+    numeric_level = getattr(
+        logging, log_level.upper(), logging.DEBUG if debug_mode else logging.INFO
+    )
 
     logging.basicConfig(
         level=numeric_level,

@@ -124,8 +124,21 @@ class BaseAgent:
         """
         try:
             content = response["choices"][0]["message"]["content"]
-            # 尝试解析JSON内容
-            return json.loads(content)
+
+            # 新增预处理：去除Markdown代码块标记
+            if content.startswith("```json"):
+                content = content[7:]  # 去除开头的```json
+            if content.endswith("```"):
+                content = content[:-3]
+
+            # 新增容错解析
+            try:
+                return json.loads(content)
+            except json.JSONDecodeError as e:
+                # 尝试提取可能的JSON部分
+                json_str = content.split("{", 1)[-1].rsplit("}", 1)[0]
+                return json.loads("{" + json_str + "}")
+
         except Exception as e:
             self.logger.error(f"解析响应失败: {str(e)}")
             self.logger.error(f"原始响应内容: {content}")
