@@ -13,32 +13,33 @@ import logging
 from typing import Dict, Any, List
 from .base_agent import BaseAgent
 
+
 class AnalysisAgent(BaseAgent):
     """
     分析Agent类，负责分析如何执行当前步骤
     """
-    
+
     def __init__(self, config: Dict[str, Any]):
         """
         初始化分析Agent
-        
+
         Args:
             config: 系统配置信息
         """
         super().__init__(config)
         self.logger = logging.getLogger(self.__class__.__name__)
-    
+
     def get_system_prompt(self) -> str:
         """
         获取系统提示词
-        
+
         Returns:
             str: 系统提示词
         """
-        prompt_path = os.path.join('agent', 'prompts', 'analysis_agent_prompt.txt')
-        
+        prompt_path = os.path.join("agent", "prompts", "analysis_agent_prompt.txt")
+
         if os.path.exists(prompt_path):
-            with open(prompt_path, 'r', encoding='utf-8') as f:
+            with open(prompt_path, "r", encoding="utf-8") as f:
                 return f.read()
         else:
             # 默认提示词
@@ -75,29 +76,36 @@ class AnalysisAgent(BaseAgent):
 
 记住，你的输出将直接被系统解析为JSON，不要包含任何其他文本。
 """
-    
-    def process(self, current_step: Dict[str, Any], conversation_history: List[Dict[str, Any]]) -> Dict[str, Any]:
+
+    def process(
+        self, current_step: Dict[str, Any], conversation_history: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         处理当前步骤，分析如何执行
-        
+
         Args:
             current_step: 当前需要执行的步骤信息
             conversation_history: 对话历史
-            
+
         Returns:
             Dict[str, Any]: 执行计划
         """
-        self.logger.info(f"开始分析步骤 {current_step['step_id']}: {current_step['description']}")
-        
+        self.logger.info(
+            f"开始分析步骤 {current_step['step_id']}: {current_step['description']}"
+        )
+
         # 构建消息
         messages = [
             {"role": "system", "content": self.get_system_prompt()},
-            {"role": "user", "content": f"请分析如何执行以下步骤:\n{json.dumps(current_step, ensure_ascii=False, indent=2)}\n\n以下是之前的对话历史，可能对你的分析有帮助:\n{json.dumps(conversation_history[-10:], ensure_ascii=False, indent=2)}"}
+            {
+                "role": "user",
+                "content": f"请分析如何执行以下步骤:\n{json.dumps(current_step, ensure_ascii=False, indent=2)}\n\n以下是之前的对话历史，可能对你的分析有帮助:\n{json.dumps(conversation_history[-10:], ensure_ascii=False, indent=2)}",
+            },
         ]
-        
+
         # 调用API
         response = self.call_api(messages, temperature=0.3)
-        
+
         # 处理响应
         try:
             execution_plan = self.process_response(response)
@@ -116,11 +124,11 @@ class AnalysisAgent(BaseAgent):
                             "operation_type": "manual",
                             "description": current_step["details"],
                             "parameters": {},
-                            "expected_outcome": current_step["expected_outcome"]
+                            "expected_outcome": current_step["expected_outcome"],
                         }
                     ],
                     "tools_required": [],
                     "potential_issues": ["分析失败，可能无法正确执行"],
-                    "fallback_plan": "请手动执行该步骤"
-                }
+                    "fallback_plan": "请手动执行该步骤",
+                },
             }
