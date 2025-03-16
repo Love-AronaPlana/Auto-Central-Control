@@ -34,6 +34,11 @@ def start_workflow(debug: bool = False) -> None:
     # 初始化各个模块
     openai_api = OpenAIAPI(debug=debug)
     prompt_manager = PromptManager()
+
+    # 移除原有提示词加载逻辑，始终获取用户输入
+    user_input = input("\n请输入您的要求：")
+    prompt_manager.user_prompts = [user_input]
+
     tool_manager = ToolManager()
     memory_manager = MemoryManager()
 
