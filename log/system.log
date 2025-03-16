@@ -1,0 +1,9 @@
+2025-03-16 20:50:46 - start - INFO - 已开启调试模式
+2025-03-16 20:50:46 - start - ERROR - 清理上一次会话数据时出错: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'e:\\Program\\Auto-Central-Control\\Auto-Central-Control-main\\log\\system.log'
+2025-03-16 20:50:46 - start - INFO - 代理工作流已初始化
+2025-03-16 20:50:46 - start - INFO - 开始交互式会话
+2025-03-16 20:50:53 - start - INFO - 收到用户输入: 浏览目录下的所有文件
+2025-03-16 20:50:53 - workflow.agent_workflow - INFO - 开始分析事件
+2025-03-16 20:50:57 - modules.api_client - INFO - 成功获取流式API响应
+2025-03-16 20:50:57 - workflow.agent_workflow - ERROR - 解析事件分析结果失败，返回内容不是有效的JSON
+2025-03-16 20:51:07 - start - INFO - 用户请求退出会话

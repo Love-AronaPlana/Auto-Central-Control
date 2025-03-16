@@ -1,24 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# 启动脚本（正常模式）
 
-"""
-run.py - 启动脚本（不开启debug模式）
-
-该脚本用于启动Auto-Central-Control系统，不开启debug模式。
-"""
-
-import os
-import sys
-from dotenv import load_dotenv
-
-# 加载环境变量
-load_dotenv()
-
-# 设置DEBUG环境变量为False
-os.environ['DEBUG'] = 'false'
-
-# 导入并运行start.py
+import asyncio
 from start import main
 
 if __name__ == "__main__":
-    main()
+    # 以正常模式启动
+    asyncio.run(main(debug=False))
