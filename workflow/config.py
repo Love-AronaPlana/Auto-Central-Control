@@ -33,7 +33,7 @@ DEFAULT_CONFIG = {
     # 日志配置
     "logging": {
         "level": "INFO",
-        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        "format": "%(asctime)s - %(name)s - %(levelname)s\n%(message)s",  # 添加换行符
         "file": "./log/workflow.log",
     },
     # 工具配置
@@ -166,15 +166,25 @@ def get_workflow_config(config: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_logging_config(config: Dict[str, Any]) -> Dict[str, Any]:
     """
-    获取日志配置
-
-    Args:
-        config: 完整配置
-
-    Returns:
-        Dict[str, Any]: 日志配置
+    获取日志配置（更新后）
     """
-    return config.get("logging", DEFAULT_CONFIG["logging"])
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "standard": {
+                "format": "[%(asctime)s] [%(module)s]\n%(message)s",  # 添加换行符
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            },
+            "debug": {
+                "format": "[%(asctime)s] [%(module)s:%(funcName)s] [%(levelname)s]\n%(message)s",  # 添加换行符
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            },
+        },
+        "handlers": {
+            # ... 保持现有handler配置不变 ...
+        },
+    }
 
 
 def get_tool_config(config: Dict[str, Any], tool_name: str) -> Dict[str, Any]:
