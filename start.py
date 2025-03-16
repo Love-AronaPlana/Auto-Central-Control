@@ -1,95 +1,78 @@
-# 主启动脚本
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+总启动脚本
+负责初始化环境、清除上次日志并启动Auto-Central-Control系统
+"""
 
 import os
-import asyncio
+import sys
 import shutil
-import argparse
-from config.logging_config import configure_logging, get_logger
-from config.constants import LOG_DIR, MEMORY_DIR
-from workflow.agent_workflow import AgentWorkflow
+import logging
+from datetime import datetime
+from dotenv import load_dotenv
 
-# 配置日志
-root_logger = configure_logging()
-logger = get_logger(__name__)
+# 加载环境变量
+load_dotenv()
 
-def clean_previous_session():
-    """清理上一次会话的数据
+# 设置日志格式
+def setup_logging(debug=False):
+    """设置日志配置"""
+    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'log')
     
-    清理日志文件和记忆存储，确保每次启动都是全新的环境。
-    """
-    try:
-        # 清理日志文件
-        for file in os.listdir(LOG_DIR):
-            if file.endswith('.log'):
-                file_path = os.path.join(LOG_DIR, file)
-                os.remove(file_path)
-                logger.info(f"已删除日志文件: {file_path}")
-                
-        # 清理记忆存储
-        for file in os.listdir(MEMORY_DIR):
-            if file.endswith('.json'):
-                file_path = os.path.join(MEMORY_DIR, file)
-                os.remove(file_path)
-                logger.info(f"已删除记忆文件: {file_path}")
-                
-        logger.info("成功清理上一次会话的数据")
-    except Exception as e:
-        logger.error(f"清理上一次会话数据时出错: {str(e)}")
-
-async def main(debug=False):
-    """主函数
+    # 确保日志目录存在
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
     
-    Args:
-        debug (bool, optional): 是否开启调试模式，默认为False
-    """
-    # 设置调试模式
-    if debug:
-        logger.info("已开启调试模式")
-    else:
-        logger.info("已开启正常模式")
-        
-    # 清理上一次会话的数据
-    clean_previous_session()
-    
-    # 创建代理工作流
-    agent = AgentWorkflow()
-    logger.info("代理工作流已初始化")
-    
-    # 启动交互式会话
-    logger.info("开始交互式会话")
-    print("欢迎使用全自动通用AI助手，请输入您的需求（输入'退出'结束会话）：")
-    
-    while True:
+    # 清理旧日志文件
+    for file in os.listdir(log_dir):
+        file_path = os.path.join(log_dir, file)
         try:
-            # 获取用户输入
-            user_input = input("> ")
-            
-            # 检查是否退出
-            if user_input.lower() in ['退出', 'exit', 'quit']:
-                logger.info("用户请求退出会话")
-                print("感谢使用，再见！")
-                break
-                
-            # 处理用户输入
-            logger.info(f"收到用户输入: {user_input}")
-            response = await agent.run(user_input)
-            
-            # 输出响应
-            print(f"\n{response}\n")
-            
-        except KeyboardInterrupt:
-            logger.info("用户中断会话")
-            print("\n会话已中断，感谢使用！")
-            break
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
         except Exception as e:
-            logger.error(f"处理用户输入时出错: {str(e)}")
-            print(f"处理您的请求时出错: {str(e)}")
+            print(f"清理日志文件时出错: {e}")
+    
+    # 创建新的日志文件
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = os.path.join(log_dir, f"acc_{timestamp}.log")
+    
+    # 设置日志级别
+    log_level = logging.DEBUG if debug else logging.INFO
+    
+    # 配置日志
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file, encoding='utf-8'),
+            logging.StreamHandler()
+        ]
+    )
+    
+    return logging.getLogger("ACC")
+
+def main(debug=False):
+    """主函数，启动系统"""
+    # 设置日志
+    logger = setup_logging(debug)
+    logger.info(f"启动Auto-Central-Control系统，调试模式：{debug}")
+    
+    try:
+        # 导入工作流模块
+        from workflow.main import start_workflow
+        
+        # 启动工作流
+        start_workflow(debug)
+        
+    except Exception as e:
+        logger.error(f"系统运行出错: {e}", exc_info=True)
+        return 1
+    
+    logger.info("系统正常退出")
+    return 0
 
 if __name__ == "__main__":
-    # 解析命令行参数
-    parser = argparse.ArgumentParser(description="全自动通用AI助手")
-    parser.add_argument("--debug", action="store_true", help="开启调试模式")
-    args = parser.parse_args()
-    
-    # 运行主函数
-    asyncio.run(main(args.debug))
+    # 如果直接运行此脚本，默认不开启调试模式
+    sys.exit(main(debug=False))

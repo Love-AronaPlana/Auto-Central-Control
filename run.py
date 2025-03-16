@@ -1,8 +1,13 @@
-# 启动脚本（正常模式）
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import asyncio
+"""
+启动脚本 - 正常模式
+不开启debug模式启动Auto-Central-Control
+"""
+
+import sys
 from start import main
 
 if __name__ == "__main__":
-    # 以正常模式启动
-    asyncio.run(main(debug=False))
+    main(debug=False)
