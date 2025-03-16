@@ -98,12 +98,12 @@ MEMORY_RETENTION_COUNT=5
 
 ### 使用指南
 
-启动系统：
+启动ACC：
 
 
 
 ```
-python start.py
+python run.py
 ```
 
 ### 示例任务
