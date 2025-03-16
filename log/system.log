@@ -7,3 +7,27 @@
 2025-03-16 20:50:57 - modules.api_client - INFO - 成功获取流式API响应
 2025-03-16 20:50:57 - workflow.agent_workflow - ERROR - 解析事件分析结果失败，返回内容不是有效的JSON
 2025-03-16 20:51:07 - start - INFO - 用户请求退出会话
+2025-03-16 20:55:49 - start - INFO - 已开启调试模式
+2025-03-16 20:55:49 - start - ERROR - 清理上一次会话数据时出错: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'e:\\Program\\Auto-Central-Control\\Auto-Central-Control-main\\log\\system.log'
+2025-03-16 20:55:49 - start - INFO - 代理工作流已初始化
+2025-03-16 20:55:49 - start - INFO - 开始交互式会话
+2025-03-16 20:55:55 - start - INFO - 收到用户输入: 查看文件
+2025-03-16 20:55:55 - modules.api_client - INFO - API Request:
+{
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "\n你是一个专业的事件分析器，负责理解用户需求和当前系统状态。\n\n你的任务是：\n1. 仔细分析用户的最新消息，提取关键需求和意图\n2. 考虑对话的历史上下文，确保理解完整的需求背景\n3. 评估当前系统状态，包括已完成的操作和待处理的任务\n4. 识别可能的挑战和限制条件\n5. 提供清晰的分析结果，作为后续决策的依据\n\n请确保你的分析全面而准确，不要遗漏重要信息。你的分析将直接影响系统选择合适的工具和执行路径。\n\n请以JSON格式返回你的分析结果，包含以下字段：\n- \"user_intent\": 用户的核心意图\n- \"key_requirements\": 关键需求列表\n- \"context_factors\": 相关的上下文因素\n- \"system_state\": 当前系统状态\n- \"challenges\": 可能的挑战和限制\n- \"next_steps\": 建议的后续步骤\n\n记住，你的分析必须客观、全面，并为后续决策提供有价值的指导。\n"
+    },
+    {
+      "role": "user",
+      "content": "查看文件"
+    }
+  ],
+  "max_tokens": 4096,
+  "temperature": 0.7
+}
+2025-03-16 20:55:56 - modules.api_client - ERROR - 发送流式请求时出错: name 'callback' is not defined
+2025-03-16 20:55:56 - workflow.agent_workflow - ERROR - 事件分析失败: name 'callback' is not defined
+2025-03-16 20:56:00 - start - INFO - 用户请求退出会话
