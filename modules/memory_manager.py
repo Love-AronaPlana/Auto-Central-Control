@@ -21,37 +21,40 @@ class MemoryManager:
     负责管理对话历史记录
     """
     
-    def __init__(self):
+    def __init__(self, session_id: str):
+        self.conversation_file = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "memory",
+            f"conversation_{session_id}.json"
+        )
+        self.system_prompt_added = False  # 新增状态标志
+
+    def init_conversation(self, system_prompt: str) -> List[Dict[str, Any]]:
         """
-        初始化记忆管理器
+        初始化对话历史时添加系统提示
         """
-        self.memory_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'memory')
-        
-        # 确保记忆目录存在
-        if not os.path.exists(self.memory_dir):
-            os.makedirs(self.memory_dir)
-        
-        # 生成当前会话ID
-        self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.conversation_file = os.path.join(self.memory_dir, f"conversation_{self.session_id}.json")
-        
-        logger.info(f"初始化记忆管理器，会话ID: {self.session_id}")
-    
-    def init_conversation(self) -> List[Dict[str, Any]]:
-        """
-        初始化对话历史
-        
-        Returns:
-            初始化的对话历史列表
-        """
-        # 创建空的对话历史
         conversation = []
-        
-        # 保存初始对话历史
+        if system_prompt:  # 添加系统提示到对话历史
+            conversation.append({
+                "role": "system",
+                "content": system_prompt
+            })
         self.save_conversation(conversation)
-        
         return conversation
-    
+
+    def load_conversation(self) -> List[Dict[str, Any]]:
+        """加载时自动标记系统提示已添加"""
+        if os.path.exists(self.conversation_file):
+            try:
+                with open(self.conversation_file, 'r', encoding='utf-8') as f:
+                    conversation = json.load(f)
+                    if any(msg.get("role") == "system" for msg in conversation):
+                        self.system_prompt_added = True
+                return conversation
+            except Exception as e:
+                logger.error(f"加载对话历史出错: {e}")
+        return []
+
     def save_conversation(self, conversation: List[Dict[str, Any]]) -> None:
         """
         保存对话历史

@@ -1,0 +1,11 @@
+2025-03-17 13:15:48,753 - ACC - INFO - 启动Auto-Central-Control系统，调试模式：True
+2025-03-17 13:15:48,915 - ACC - INFO - 初始化工作流...
+2025-03-17 13:15:48,916 - ACC - ERROR - 系统运行出错: invalid literal for int() with base 10: '8192  # 单次对话最大token数'
+Traceback (most recent call last):
+  File "D:\Auto-Central-Control\Auto-Central-Control-main\start.py", line 60, in main
+    start_workflow(debug)
+  File "D:\Auto-Central-Control\Auto-Central-Control-main\workflow\main.py", line 35, in start_workflow
+    openai_api = OpenAIAPI(debug=debug)
+  File "D:\Auto-Central-Control\Auto-Central-Control-main\modules\openai_api.py", line 36, in __init__
+    self.max_tokens = int(os.getenv("MAX_TOKENS", "8192"))
+ValueError: invalid literal for int() with base 10: '8192  # 单次对话最大token数'

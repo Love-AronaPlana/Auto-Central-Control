@@ -28,7 +28,7 @@ def setup_logging(debug=False):
 
     # 创建新的日志文件
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = os.path.join(log_dir, f"acc_{timestamp}.log")
+    log_file = os.path.join(log_dir, f"APSN_{timestamp}.log")
 
     # 设置日志级别
     log_level = logging.DEBUG if debug else logging.INFO
