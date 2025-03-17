@@ -1,0 +1,22 @@
+[
+    {
+        "role": "user",
+        "content": "查看所有文件"
+    },
+    {
+        "role": "assistant",
+        "content": "好的，我想查看所有文件。请指定要在哪个目录中搜索文件。如果没有指定目录，我将搜索当前工作目录。"
+    },
+    {
+        "role": "assistant",
+        "content": "好的，我想查看所有文件。请指定要在哪个目录中搜索文件。如果没有指定目录，我将搜索当前工作目录。"
+    },
+    {
+        "role": "assistant",
+        "content": "\n\n请提供目录路径，例如 `/home/user/documents`。\n"
+    },
+    {
+        "role": "assistant",
+        "content": "\n\n请提供目录路径，例如 `/home/user/documents`。\n"
+    }
+]

@@ -213,3 +213,22 @@ class PromptManager:
         重置提示词管理器
         """
         self.current_prompt_index = 0
+
+    def get_tools_prompt(self) -> str:
+        """
+        获取工具提示词（带格式优化）
+        """
+        tools_file = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tools.json"
+        )
+        try:
+            with open(tools_file, "r", encoding="utf-8") as f:
+                tools_data = json.load(f)
+                # 将JSON转换为易读的文本格式
+                return "\n".join(
+                    f"工具 {i+1}: {tool['function']['name']} - {tool['function']['description']}"
+                    for i, tool in enumerate(tools_data)
+                )
+        except Exception as e:
+            logger.error(f"读取工具提示词出错: {e}")
+            return ""

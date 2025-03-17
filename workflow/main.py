@@ -55,42 +55,44 @@ def start_workflow(debug: bool = False) -> None:
     # 加载助手提示词
     assistant_prompt = prompt_manager.get_assistant_prompt()
 
+    # 加载工具提示词
+    tools_prompt = prompt_manager.get_tools_prompt()
+
     # 初始化对话历史
     system_prompt = prompt_manager.get_system_prompt()
-    conversation_history = memory_manager.init_conversation(
-        system_prompt
-    )  # 添加system_prompt参数
+    modules_prompt = prompt_manager.get_modules_prompt()
+    tools_prompt = prompt_manager.get_tools_prompt()
+    assistant_prompt = prompt_manager.get_assistant_prompt()
+
+    # 初始化系统消息结构
+    system_messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "system", "content": modules_prompt},
+        {"role": "system", "content": tools_prompt},
+        {"role": "assistant", "content": assistant_prompt},
+    ]
 
     # 工作流循环
     try:
-        first_iteration = True  # 新增首次循环标志
+        first_iteration = True
         while True:
-            # 获取当前提示词
             current_prompt = prompt_manager.get_current_prompt()
+            if current_prompt:
+                # 将用户输入添加到对话历史
+                conversation_history.append({"role": "user", "content": current_prompt})
 
             # 准备发送给AI的消息
-            messages = []
-            if first_iteration:
-                # 首次循环添加所有系统提示
-                messages = [
-                    {"role": "system", "content": system_prompt},
-                    *conversation_history,
-                    {"role": "system", "content": modules_prompt},
-                    {"role": "assistant", "content": assistant_prompt},
-                ]
-                first_iteration = False
-            else:
-                # 后续循环仅使用历史记录
-                messages = conversation_history.copy()
+            messages = system_messages.copy()  # 复制基础系统结构
+            messages.extend(conversation_history)  # 添加历史对话
 
-            if current_prompt:
-                messages.append({"role": "user", "content": current_prompt})
+            # if current_prompt:
+            #     messages.append({"role": "user", "content": current_prompt})
 
             # 获取可用工具
             available_tools = tool_manager.get_available_tools()
 
-            # 调用OpenAI API
-            response = openai_api.send_request(messages=messages, tools=available_tools)
+            # 调用OpenAI API（保持无tools参数）
+            response = openai_api.send_request(messages=messages)
 
             # 处理响应
             if response:
@@ -147,8 +149,8 @@ def start_workflow(debug: bool = False) -> None:
                 memory_manager.save_conversation(conversation_history)
 
             # 检查是否需要继续循环
-            if prompt_manager.should_continue() is False:
-                break
+            # if prompt_manager.should_continue() is False:
+            #     break
 
     except KeyboardInterrupt:
         logger.info("用户中断工作流")
