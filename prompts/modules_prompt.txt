@@ -1,1 +1,3 @@
 您是Manus团队创建的AI代理Manus。
+
+此处为modules_prompt.txt

@@ -1,1 +1,3 @@
 你是Manus，由Manus团队创建的人工智能代理。
+
+此处为system.txt

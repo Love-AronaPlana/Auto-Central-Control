@@ -63,19 +63,25 @@ def start_workflow(debug: bool = False) -> None:
 
     # 工作流循环
     try:
+        first_iteration = True  # 新增首次循环标志
         while True:
             # 获取当前提示词
             current_prompt = prompt_manager.get_current_prompt()
 
             # 准备发送给AI的消息
-            messages = [
-                {"role": "system", "content": system_prompt},
-                *conversation_history,
-            ]
-
-            messages.append({"role": "system", "content": modules_prompt})
-
-            messages.append({"role": "assistant", "content": assistant_prompt})
+            messages = []
+            if first_iteration:
+                # 首次循环添加所有系统提示
+                messages = [
+                    {"role": "system", "content": system_prompt},
+                    *conversation_history,
+                    {"role": "system", "content": modules_prompt},
+                    {"role": "assistant", "content": assistant_prompt},
+                ]
+                first_iteration = False
+            else:
+                # 后续循环仅使用历史记录
+                messages = conversation_history.copy()
 
             if current_prompt:
                 messages.append({"role": "user", "content": current_prompt})
@@ -92,45 +98,45 @@ def start_workflow(debug: bool = False) -> None:
                 parsed_response = openai_api.parse_response(response)
 
                 # 处理工具调用
-                # if "tool_calls" in parsed_response:
-                #     for tool_call in parsed_response["tool_calls"]:
-                #         # 执行工具调用
-                #         tool_result = tool_manager.execute_tool(
-                #             tool_call["name"], tool_call["arguments"]
-                #         )
+                if "tool_calls" in parsed_response:
+                    for tool_call in parsed_response["tool_calls"]:
+                        # 执行工具调用
+                        tool_result = tool_manager.execute_tool(
+                            tool_call["name"], tool_call["arguments"]
+                        )
 
-                #         # 将工具调用结果添加到对话历史
-                #         conversation_history.append(
-                #             {
-                #                 "role": "assistant",
-                #                 "content": None,
-                #                 "tool_calls": [
-                #                     {
-                #                         "id": tool_call["id"],
-                #                         "type": "function",
-                #                         "function": {
-                #                             "name": tool_call["name"],
-                #                             "arguments": json.dumps(
-                #                                 tool_call["arguments"]
-                #                             ),
-                #                         },
-                #                     }
-                #                 ],
-                #             }
-                #         )
+                        # 将工具调用结果添加到对话历史
+                        conversation_history.append(
+                            {
+                                "role": "assistant",
+                                "content": None,
+                                "tool_calls": [
+                                    {
+                                        "id": tool_call["id"],
+                                        "type": "function",
+                                        "function": {
+                                            "name": tool_call["name"],
+                                            "arguments": json.dumps(
+                                                tool_call["arguments"]
+                                            ),
+                                        },
+                                    }
+                                ],
+                            }
+                        )
 
-                #         conversation_history.append(
-                #             {
-                #                 "role": "tool",
-                #                 "tool_call_id": tool_call["id"],
-                #                 "content": json.dumps(tool_result),
-                #             }
-                #         )
-                # else:
-                #     # 将AI响应添加到对话历史
-                #     conversation_history.append(
-                #         {"role": "assistant", "content": parsed_response["content"]}
-                #     )
+                        conversation_history.append(
+                            {
+                                "role": "tool",
+                                "tool_call_id": tool_call["id"],
+                                "content": json.dumps(tool_result),
+                            }
+                        )
+                else:
+                    # 将AI响应添加到对话历史
+                    conversation_history.append(
+                        {"role": "assistant", "content": parsed_response["content"]}
+                    )
 
                 # 将AI响应添加到对话历史
                 conversation_history.append(
@@ -141,8 +147,8 @@ def start_workflow(debug: bool = False) -> None:
                 memory_manager.save_conversation(conversation_history)
 
             # 检查是否需要继续循环
-            # if prompt_manager.should_continue() is False:
-            #     break
+            if prompt_manager.should_continue() is False:
+                break
 
     except KeyboardInterrupt:
         logger.info("用户中断工作流")
