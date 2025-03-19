@@ -1,0 +1,86 @@
+2025-03-19 20:56:58,953 - ASN.workflow - INFO - 初始化工作流程控制器
+2025-03-19 20:56:58,954 - ASN.memory.memory_manager - INFO - 已清空TODO目录: e:\Program\Autopilot-System-Next\Autopilot-System-Next\ASN\memory\todo
+2025-03-19 20:56:58,955 - ASN.agent.analysis - INFO - 初始化分析代理
+2025-03-19 20:56:58,955 - ASN.agent.planning - INFO - 规划Agent初始化完成
+2025-03-19 20:56:58,955 - ASN.agent.ordinary_reply - INFO - 初始化普通回复代理
+2025-03-19 20:56:58,957 - ASN.workflow - INFO - 创建目录: e:\Program\Autopilot-System-Next\Autopilot-System-Next\memory
+2025-03-19 20:56:58,959 - ASN.workflow - INFO - 开始执行工作流程，用户输入: 写一个愤怒的小鸟程序
+2025-03-19 20:56:58,959 - ASN.workflow - INFO - 🔄 正在询问分析Agent...
+2025-03-19 20:56:58,960 - ASN.agent.analysis - INFO - 开始分析用户需求: 写一个愤怒的小鸟程序
+2025-03-19 20:56:58,961 - ASN.agent.analysis - INFO - 🔄 正在向LLM发送分析请求...
+2025-03-19 20:56:58,961 - ASN.llm - DEBUG - 🔍 [调试模式] LLM配置已加载
+2025-03-19 20:56:58,962 - ASN.llm - DEBUG - 当前调试模式状态: True
+2025-03-19 20:56:58,963 - ASN.llm - DEBUG - 完整配置内容: {
+  "model": "gemini-2.0-flash",
+  "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+  "api_key": "AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE",
+  "max_tokens": 4096,
+  "temperature": 0.3,
+  "debug": true,
+  "vision": {
+    "model": "gemini-2.0-flash",
+    "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+    "api_key": "AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM"
+  }
+}
+2025-03-19 20:56:58,967 - ASN.llm - INFO - LLM客户端初始化完成，使用模型: gemini-2.0-flash
+2025-03-19 20:56:58,968 - ASN.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-19 20:56:58,968 - ASN.llm - DEBUG - URL: https://gemini-api-gavinchen.deno.dev/v1/chat/completions
+2025-03-19 20:56:58,969 - ASN.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE'}
+2025-03-19 20:56:58,969 - ASN.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个分析专家，负责分析用户的需求是否需要进行任务规划。\n\n你需要根据用户的输入，判断是否需要进行任务规划。判断标准如下：\n1. 如果用户的需求涉及多个步骤或复杂的任务流程，需要规划\n2. 如果用户的需求需要创建或修改多个文件，需要规划\n3. 如果用户的需求涉及到系统架构或重要功能的修改，需要规划\n4. 如果是简单的单一操作（如查看文件、打开文件等），不需要规划\n\n任务复杂度评估标准：\n- high: 涉及多个模块/文件，需要仔细规划和协调\n- medium: 涉及2-3个相关操作，需要一定规划\n- low: 单一简单操作，无需特别规划\n\n你需要以JSON格式回复，包含以下字段：\n{\n    \"need_planning\": true/false,  # 是否需要规划\n    \"reason\": \"具体原因\",  # 为什么需要/不需要规划\n    \"complexity\": \"high/medium/low\"  # 任务复杂度\n}\n\n用户输入: {user_input}\n"
+    },
+    {
+      "role": "user",
+      "content": "分析需求：写一个愤怒的小鸟程序\n请判断是否需要任务规划"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false
+}
+2025-03-19 20:56:58,978 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api-gavinchen.deno.dev:443
+2025-03-19 20:57:00,396 - urllib3.connectionpool - DEBUG - https://gemini-api-gavinchen.deno.dev:443 "POST /v1/chat/completions HTTP/1.1" 200 565
+2025-03-19 20:57:00,400 - ASN.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-19 20:57:00,402 - ASN.llm - DEBUG - Status Code: 200
+2025-03-19 20:57:00,403 - ASN.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Wed, 19 Mar 2025 12:57:00 GMT', 'server': 'deno/gcp-asia-southeast1', 'server-timing': 'gfet4t7; dur=897', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '565', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-19 20:57:00,408 - ASN.llm - DEBUG - Full Response: {"id":"chatcmpl-C0lPDNCDtMhOf72YxyKPsWt7FeYi1","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n    \"need_planning\": true,\n    \"reason\": \"开发一个愤怒的小鸟程序涉及多个步骤，包括游戏引擎选择、物理引擎集成、游戏逻辑实现、用户界面设计、资源管理等，需要进行详细的任务规划。\",\n    \"complexity\": \"high\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742389020,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":69,"prompt_tokens":242,"total_tokens":311}}
+2025-03-19 20:57:00,414 - ASN.agent.analysis - INFO - ✅ 成功接收LLM分析响应
+2025-03-19 20:57:00,417 - ASN.llm - ERROR - 解析JSON失败: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-03-19 20:57:00,419 - ASN.llm - ERROR - 预处理后的内容: {\n    \"need_planning\": true,\n    \"reason\": \"\u5f00\u53d1\u4e00\u4e2a\u6124\u6012\u7684\u5c0f\u9e1f\u7a0b\u5e8f\u6d89\u53ca\u591a\u4e2a\u6b65\u9aa4\uff0c\u5305\u62ec\u6e38\u620f\u5f15\u64ce\u9009\u62e9\u3001\u7269\u7406\u5f15\u64ce\u96c6\u6210\u3001\u6e38\u620f\u903b\u8f91\u5b9e\u73b0\u3001\u7528\u6237\u754c\u9762\u8bbe\u8ba1\u3001\u8d44\u6e90\u7ba1\u7406\u7b49\uff0c\u9700\u8981\u8fdb\u884c\u8be6\u7ec6\u7684\u4efb\u52a1\u89c4\u5212\u3002\",\n    \"complexity\": \"high\"\n}
+2025-03-19 20:57:00,424 - ASN.llm - ERROR - 二次解析失败: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-03-19 20:57:00,425 - ASN.workflow - INFO - 🔄 正在询问规划Agent...
+2025-03-19 20:57:00,426 - ASN.agent.planning - INFO - 规划Agent开始处理用户输入: 写一个愤怒的小鸟程序
+2025-03-19 20:57:00,428 - ASN.agent.planning - INFO - 🔄 正在向LLM发送规划请求...
+2025-03-19 20:57:00,430 - ASN.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-19 20:57:00,431 - ASN.llm - DEBUG - URL: https://gemini-api-gavinchen.deno.dev/v1/chat/completions
+2025-03-19 20:57:00,432 - ASN.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE'}
+2025-03-19 20:57:00,433 - ASN.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是ASN（Autopilot System Next）的规划Agent，负责分析用户需求并创建详细的执行计划。\n\n你的任务是：\n1. 仔细分析用户的需求\n2. 将需求分解为明确的步骤和任务\n3. 创建一个及其详细的结构化的执行计划\n4. 以Markdown格式返回执行计划\n\n你的输出必须是有效的Markdown格式，严格按照以下格式回复：\n\n{\n  \"analysis\": \"对用户需求的分析\",\n  \"tasks\": {\n    \"task_name\": \"代办总名称\",\n    \"description\": \"任务描述\",\n    \"complexity\": \"low/medium/high\",\n    \"task_structure\": \"# <项目名称> TODO\n\n## <一级任务列表>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n\n## <一级任务列表>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n...\"  // 注意：任务结构必须是Markdown格式的TODO列表，且只能将所有TODO放在同一个Markdown列表内。一级任务列表不可添加\"[ ]\"。\n    },\n  \"execution_plan\": \"执行计划的总体描述\"\n}\n\n只能含有一个task_structure。\n请确保你的分析全面、任务分解合理，并考虑任务之间的依赖关系。\n"
+    },
+    {
+      "role": "user",
+      "content": "请分析以下用户需求，并创建一个非常详细的执行计划：\n\n写一个愤怒的小鸟程序\n\n请以JSON格式返回你的规划结果。\n"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false
+}
+2025-03-19 20:57:00,445 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api-gavinchen.deno.dev:443
+2025-03-19 20:57:07,419 - urllib3.connectionpool - DEBUG - https://gemini-api-gavinchen.deno.dev:443 "POST /v1/chat/completions HTTP/1.1" 200 2610
+2025-03-19 20:57:07,424 - ASN.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-19 20:57:07,426 - ASN.llm - DEBUG - Status Code: 200
+2025-03-19 20:57:07,430 - ASN.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Wed, 19 Mar 2025 12:57:07 GMT', 'server': 'deno/gcp-asia-southeast1', 'server-timing': 'gfet4t7; dur=6614', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '2610', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-19 20:57:07,435 - ASN.llm - DEBUG - Full Response: {"id":"chatcmpl-AHvgGqpE3iH0WxZRUPSBZ2DXnrcln","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n  \"analysis\": \"用户需求是开发一个愤怒的小鸟程序。这个需求比较宽泛，需要细化功能点和技术选型。需要考虑游戏的核心机制（物理引擎、碰撞检测、抛物线运动）、用户界面、关卡设计、音效、以及可能的扩展功能（例如，不同类型的小鸟、特殊道具）。\",\n  \"tasks\": {\n    \"angry_birds_program\": \"开发愤怒的小鸟程序\",\n    \"description\": \"根据用户需求，开发一个完整的愤怒的小鸟游戏程序，包含游戏核心机制、用户界面、关卡设计等。\",\n    \"complexity\": \"high\",\n    \"task_structure\": \"# 愤怒的小鸟程序 TODO\n\n## 需求分析与设计\n- [ ] 确定游戏的核心机制（物理引擎、碰撞检测、抛物线运动）\n- [ ] 确定开发语言和框架（例如：Python + Pygame, Unity, C++ + SFML）\n- [ ] 设计游戏的用户界面（主菜单、关卡选择、游戏界面、结算界面）\n- [ ] 设计游戏关卡（包括地形、障碍物、猪的位置）\n- [ ] 确定游戏音效和音乐\n- [ ] 确定小鸟的种类和特殊技能\n- [ ] 确定猪的种类和生命值\n- [ ] 设计游戏物理引擎（简易版或者使用现有物理引擎库）\n- [ ] 设计碰撞检测算法\n- [ ] 设计抛物线运动的计算方法\n- [ ] 确定游戏的分数计算方式\n- [ ] 确定游戏的胜利和失败条件\n- [ ] 编写详细的设计文档\n\n## 环境搭建与基础框架搭建\n- [ ] 安装开发环境（例如：Python, Pygame, Unity, C++, SFML）\n- [ ] 创建项目目录结构\n- [ ] 初始化游戏窗口\n- [ ] 实现游戏主循环\n- [ ] 实现游戏状态管理（例如：主菜单、关卡选择、游戏进行中、结算界面）\n- [ ] 加载游戏资源（图片、音效、音乐）\n- [ ] 实现简单的用户输入处理（鼠标点击、键盘按键）\n\n## 物理引擎与碰撞检测\n- [ ] 实现简易的物理引擎（重力、摩擦力、弹性）\n- [ ] 实现小鸟的发射逻辑（计算初始速度和角度）\n- [ ] 实现小鸟的抛物线运动\n- [ ] 实现碰撞检测算法（例如：AABB碰撞检测、圆形碰撞检测）\n- [ ] 处理碰撞后的物体运动（例如：反弹、破碎）\n- [ ] 实现地形的碰撞检测\n- [ ] 实现猪和障碍物的碰撞检测\n\n## 游戏对象与关卡设计\n- [ ] 创建小鸟类（包括位置、速度、角度、类型、技能）\n- [ ] 创建猪类（包括位置、生命值）\n- [ ] 创建障碍物类（包括位置、形状、材质）\n- [ ] 创建地形类（包括形状、材质）\n- [ ] 实现关卡加载功能（从文件读取关卡数据）\n- [ ] 设计多个关卡（包括不同的地形、障碍物、猪的位置）\n- [ ] 实现关卡编辑器（可选）\n\n## 用户界面与交互\n- [ ] 实现主菜单界面\n- [ ] 实现关卡选择界面\n- [ ] 实现游戏界面（显示小鸟、猪、障碍物、地形、分数）\n- [ ] 实现结算界面（显示游戏结果、分数）\n- [ ] 实现用户交互功能（鼠标点击发射小鸟、键盘按键控制）\n- [ ] 添加音效和音乐\n- [ ] 实现暂停/继续功能\n\n## 游戏逻辑与AI\n- [ ] 实现小鸟的发射逻辑\n- [ ] 实现小鸟的技能释放逻辑\n- [ ] 实现猪的简单AI（例如：随机移动、躲避）\n- [ ] 实现游戏胜利和失败的判断逻辑\n- [ ] 实现分数计算逻辑\n\n## 测试与优化\n- [ ] 进行单元测试（测试各个模块的功能）\n- [ ] 进行集成测试（测试各个模块之间的协作）\n- [ ] 进行用户体验测试（测试游戏的易用性和趣味性）\n- [ ] 优化游戏性能（例如：减少资源占用、提高帧率）\n- [ ] 修复bug\n\n## 发布与部署\n- [ ] 打包游戏\n- [ ] 发布游戏到平台（例如：PC、Android、iOS）\n- [ ] 编写游戏说明文档\n\"\n    },\n  \"execution_plan\": \"本计划旨在详细分解开发愤怒的小鸟程序所需的步骤。首先进行需求分析和设计，明确游戏的核心机制和功能。然后搭建开发环境和基础框架。接着实现物理引擎、碰撞检测和游戏对象。再实现用户界面和交互。最后进行测试、优化和发布。每个阶段都包含详细的任务列表，确保开发过程的顺利进行。\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742389027,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":1054,"prompt_tokens":352,"total_tokens":1406}}
+2025-03-19 20:57:07,457 - ASN.agent.planning - INFO - ✅ 成功接收LLM规划响应
+2025-03-19 20:57:07,461 - ASN.agent.planning - INFO - 保存规划文件成功: e:\Program\Autopilot-System-Next\Autopilot-System-Next\ASN\memory\todo\planning.md
+2025-03-19 20:57:07,463 - ASN.memory.memory_manager - INFO - 保存文件成功: e:\Program\Autopilot-System-Next\Autopilot-System-Next\ASN\memory\planning_result.json

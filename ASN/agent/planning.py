@@ -18,6 +18,11 @@ from ASN.memory.memory_manager import MemoryManager
 logger = logging.getLogger(__name__)
 
 
+# 在文件顶部添加以下导入
+import os
+from pathlib import Path
+
+
 class PlanningAgent(BaseAgent):
     """规划Agent，负责分析用户需求并创建详细的执行计划"""
 
@@ -43,6 +48,24 @@ class PlanningAgent(BaseAgent):
             logger.error(f"规划结果解析失败: {str(e)}\n原始内容: {content[:500]}...")
             return {"error": f"JSON解析错误: {str(e)}", "raw_response": content}
 
+    def _save_planning_md(self, content: str) -> str:
+        """保存规划文件到ASN/memory/todo目录"""
+        # 计算项目根目录（假设planning.py在ASN/agent目录）
+        current_dir = Path(__file__).parent
+        todo_dir = current_dir.parent / "memory" / "todo"
+        todo_dir.mkdir(parents=True, exist_ok=True)
+
+        file_path = todo_dir / "planning.md"
+
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content.replace("\\n", "\n"))
+            logger.info(f"保存规划文件成功: {file_path}")
+            return str(file_path)
+        except Exception as e:
+            logger.error(f"保存规划文件失败: {e}")
+            raise
+
     def run(self, user_input: str) -> Dict[str, Any]:
         """运行规划Agent"""
         logger.info(f"规划Agent开始处理用户输入: {user_input}")
@@ -62,7 +85,8 @@ class PlanningAgent(BaseAgent):
             if isinstance(tasks, list) and len(tasks) > 0:
                 tasks = tasks[0]
             if task_structure := tasks.get("task_structure"):
-                MemoryManager.save_planning_md(task_structure)
+                # 替换原有的MemoryManager调用
+                self._save_planning_md(task_structure)
 
             self.reset_messages()
             return planning_result

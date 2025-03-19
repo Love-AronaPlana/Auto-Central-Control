@@ -166,27 +166,6 @@ class MemoryManager:
     @staticmethod
     # 修改保存路径处理逻辑
     @staticmethod
-    def save_planning_md(content: str) -> str:
-        """保存规划文件到todo目录"""
-        todo_dir = os.path.join(MEMORY_DIR, "todo")
-        os.makedirs(todo_dir, exist_ok=True)
-
-        filename = "planning.md"
-        file_path = os.path.join(todo_dir, filename)
-
-        # 转换换行符
-        normalized_content = content.replace("\\n", "\n")
-
-        try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(normalized_content)
-            logger.info(f"保存规划文件成功: {file_path}")
-            return file_path
-        except Exception as e:
-            logger.error(f"保存规划文件失败: {e}")
-            raise
-
-    @staticmethod
     def clean_todo_directory():
         """清空ASN模块的todo目录"""
         todo_dir = os.path.join(MEMORY_DIR, "todo")
