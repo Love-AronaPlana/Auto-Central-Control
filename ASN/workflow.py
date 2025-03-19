@@ -53,7 +53,11 @@ class Workflow:
 
     def execute(self, user_input: str) -> Dict[str, Any]:
         """执行工作流程"""
-        while True:  # 新增循环控制
+        while True:
+            # 新增退出条件检查
+            if user_input.strip().lower() in ("exit", "退出"):
+                return {"status": "exit", "message": "用户请求退出系统"}
+
             logger.info(f"开始执行工作流程，用户输入: {user_input}")
 
             try:
@@ -81,8 +85,8 @@ class Workflow:
                     if reply_content := ordinary_reply.get("reply"):
                         print(f"Assistant: {reply_content}")
 
-                    # 获取新输入继续循环
-                    user_input = input("\n用户：")  # 新增用户输入提示
+                    # 获取新输入并检查退出命令
+                    user_input = input("\n用户：")
                     continue  # 继续下一次循环
 
             except Exception as e:
