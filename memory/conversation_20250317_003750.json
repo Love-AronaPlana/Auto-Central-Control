@@ -1,6 +1,0 @@
-[
-    {
-        "role": "assistant",
-        "content": "好的，我将查看当前目录中的所有文件。\n```tool_code\n# 不需要参数\nprint(os.listdir('.'))\n```"
-    }
-]

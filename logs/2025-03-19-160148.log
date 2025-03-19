@@ -1,0 +1,90 @@
+2025-03-19 16:01:49,671 - ASN.workflow - INFO - 初始化工作流程控制器
+2025-03-19 16:01:49,671 - ASN.agent.analysis - INFO - 初始化分析代理
+2025-03-19 16:01:49,671 - ASN.agent.planning - INFO - 规划Agent初始化完成
+2025-03-19 16:01:49,671 - ASN.agent.ordinary_reply - INFO - 初始化普通回复代理
+2025-03-19 16:01:49,671 - ASN.workflow - INFO - 开始执行工作流程，用户输入: 帮我写一个贪吃蛇程序
+2025-03-19 16:01:49,671 - ASN.workflow - INFO - 🔄 正在询问分析Agent...
+2025-03-19 16:01:49,671 - ASN.agent.analysis - INFO - 开始分析用户需求: 帮我写一个贪吃蛇程序
+2025-03-19 16:01:49,671 - ASN.agent.analysis - INFO - 🔄 正在向LLM发送分析请求...
+2025-03-19 16:01:49,671 - ASN.llm - DEBUG - 🔍 [调试模式] LLM配置已加载
+2025-03-19 16:01:49,671 - ASN.llm - DEBUG - 当前调试模式状态: True
+2025-03-19 16:01:49,671 - ASN.llm - DEBUG - 完整配置内容: {
+  "model": "gemini-2.0-flash",
+  "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+  "api_key": "AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE",
+  "max_tokens": 4096,
+  "temperature": 0.3,
+  "debug": true,
+  "vision": {
+    "model": "gemini-2.0-flash",
+    "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+    "api_key": "AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM"
+  }
+}
+2025-03-19 16:01:49,683 - ASN.llm - INFO - LLM客户端初始化完成，使用模型: gemini-2.0-flash
+2025-03-19 16:01:49,683 - ASN.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-19 16:01:49,684 - ASN.llm - DEBUG - URL: https://gemini-api-gavinchen.deno.dev/v1/chat/completions
+2025-03-19 16:01:49,685 - ASN.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE'}
+2025-03-19 16:01:49,685 - ASN.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个分析专家，负责分析用户的需求是否需要进行任务规划。\n\n你需要根据用户的输入，判断是否需要进行任务规划。判断标准如下：\n1. 如果用户的需求涉及多个步骤或复杂的任务流程，需要规划\n2. 如果用户的需求需要创建或修改多个文件，需要规划\n3. 如果用户的需求涉及到系统架构或重要功能的修改，需要规划\n4. 如果是简单的单一操作（如查看文件、打开文件等），不需要规划\n\n任务复杂度评估标准：\n- high: 涉及多个模块/文件，需要仔细规划和协调\n- medium: 涉及2-3个相关操作，需要一定规划\n- low: 单一简单操作，无需特别规划\n\n你需要以JSON格式回复，包含以下字段：\n{\n    \"need_planning\": true/false,  # 是否需要规划\n    \"reason\": \"具体原因\",  # 为什么需要/不需要规划\n    \"complexity\": \"high/medium/low\"  # 任务复杂度\n}\n\n用户输入: {user_input}\n"
+    },
+    {
+      "role": "user",
+      "content": "分析需求：帮我写一个贪吃蛇程序\n请判断是否需要任务规划"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false
+}
+2025-03-19 16:01:49,692 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api-gavinchen.deno.dev:443
+2025-03-19 16:01:51,266 - urllib3.connectionpool - DEBUG - https://gemini-api-gavinchen.deno.dev:443 "POST /v1/chat/completions HTTP/11" 200 534
+2025-03-19 16:01:51,266 - ASN.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-19 16:01:51,266 - ASN.llm - DEBUG - Status Code: 200
+2025-03-19 16:01:51,266 - ASN.llm - DEBUG - Response Body: {"id":"chatcmpl-PHbvt2E8PrW84i2McFT9iprjaCRvJ","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n    \"need_planning\": true,\n    \"reason\": \"编写贪吃蛇程序涉及多个步骤，包括游戏初始化、蛇的移动、食物生成、碰撞检测、游戏结束判断等，需要进行任务规划。\",\n    \"complexity\": \"high\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742371310,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":65,"prompt_tokens":243,"total_tokens":308}}
+2025-03-19 16:01:51,266 - ASN.llm - DEBUG - ✅ [调试模式] API响应详情
+2025-03-19 16:01:51,266 - ASN.llm - DEBUG - Status Code: 200
+2025-03-19 16:01:51,266 - ASN.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Wed, 19 Mar 2025 08:01:50 GMT', 'server': 'deno/gcp-us-west2', 'server-timing': 'gfet4t7; dur=890', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '534', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-19 16:01:51,266 - ASN.llm - DEBUG - Full Response: {"id":"chatcmpl-PHbvt2E8PrW84i2McFT9iprjaCRvJ","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n    \"need_planning\": true,\n    \"reason\": \"编写贪吃蛇程序涉及多个步骤，包括游戏初始化、蛇的移动、食物生成、碰撞检测、游戏结束判断等，需要进行任务规划。\",\n    \"complexity\": \"high\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742371310,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":65,"prompt_tokens":243,"total_tokens":308}}
+2025-03-19 16:01:51,280 - ASN.agent.analysis - INFO - ✅ 成功接收LLM分析响应
+2025-03-19 16:01:51,281 - ASN.llm - ERROR - 解析JSON失败: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-03-19 16:01:51,283 - ASN.llm - ERROR - 预处理后的内容: {\n    \"need_planning\": true,\n    \"reason\": \"\u7f16\u5199\u8d2a\u5403\u86c7\u7a0b\u5e8f\u6d89\u53ca\u591a\u4e2a\u6b65\u9aa4\uff0c\u5305\u62ec\u6e38\u620f\u521d\u59cb\u5316\u3001\u86c7\u7684\u79fb\u52a8\u3001\u98df\u7269\u751f\u6210\u3001\u78b0\u649e\u68c0\u6d4b\u3001\u6e38\u620f\u7ed3\u675f\u5224\u65ad\u7b49\uff0c\u9700\u8981\u8fdb\u884c\u4efb\u52a1\u89c4\u5212\u3002\",\n    \"complexity\": \"high\"\n}
+2025-03-19 16:01:51,283 - ASN.llm - ERROR - 二次解析失败: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2025-03-19 16:01:51,283 - ASN.workflow - INFO - 🔄 正在询问规划Agent...
+2025-03-19 16:01:51,284 - ASN.agent.planning - INFO - 规划Agent开始处理用户输入: 帮我写一个贪吃蛇程序
+2025-03-19 16:01:51,284 - ASN.agent.planning - INFO - 🔄 正在向LLM发送规划请求...
+2025-03-19 16:01:51,285 - ASN.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-19 16:01:51,285 - ASN.llm - DEBUG - URL: https://gemini-api-gavinchen.deno.dev/v1/chat/completions
+2025-03-19 16:01:51,285 - ASN.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE'}
+2025-03-19 16:01:51,285 - ASN.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是ASN（Autopilot System Next）的规划Agent，负责分析用户需求并创建详细的执行计划。\n\n你的任务是：\n1. 仔细分析用户的需求\n2. 将需求分解为明确的步骤和任务\n3. 创建一个及其详细的结构化的执行计划\n4. 以Markdown格式返回执行计划\n\n你的输出必须是有效的Markdown格式，严格按照以下格式回复：\n\n{\n  \"analysis\": \"对用户需求的分析\",\n  \"tasks\": [\n    {\n      \"name\": \"任务名称\",\n      \"description\": \"任务描述\",\n      \"complexity\": \"low/medium/high\",\n      \"task_structure\": \"# <项目名称> TODO\n\n## <一级任务列表>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n\n## <一级任务列表>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n- [ ] <二级任务描述>\n...\"  // 注意：任务结构必须是Markdown格式的TODO列表，且只能将所有TODO放在同一个Markdown列表内。一级人物列表不可添加\"[ ]\"。\n    }\n  ],\n  \"execution_plan\": \"执行计划的总体描述\"\n}\n\n只能含有一个task_structure。\n不需要使用'''JSON  '''等控制字符。\n请确保你的分析全面、任务分解合理，并考虑任务之间的依赖关系。\n"
+    },
+    {
+      "role": "user",
+      "content": "请分析以下用户需求，并创建一个非常详细的执行计划：\n\n帮我写一个贪吃蛇程序\n\n请以JSON格式返回你的规划结果。\n"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false
+}
+2025-03-19 16:01:51,289 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api-gavinchen.deno.dev:443
+2025-03-19 16:01:59,709 - urllib3.connectionpool - DEBUG - https://gemini-api-gavinchen.deno.dev:443 "POST /v1/chat/completions HTTP/11" 200 2905
+2025-03-19 16:01:59,709 - ASN.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-19 16:01:59,709 - ASN.llm - DEBUG - Status Code: 200
+2025-03-19 16:01:59,709 - ASN.llm - DEBUG - Response Body: {"id":"chatcmpl-O0utNlGoc2YTXvDPWl2LqTxEVVxmC","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n  \"analysis\": \"用户需要一个贪吃蛇游戏程序。需要考虑游戏的基本元素（蛇、食物、游戏区域）、游戏逻辑（蛇的移动、碰撞检测、食物生成、得分）、用户交互（控制蛇的移动）、以及可能的扩展功能（难度选择、排行榜等）。为了提供一个详细的执行计划，我将程序分解为多个模块，并为每个模块制定具体的任务。\",\n  \"tasks\": [\n    {\n      \"name\": \"项目初始化与环境搭建\",\n      \"description\": \"创建项目目录，选择合适的编程语言和开发环境，并搭建基本的开发框架。\",\n      \"complexity\": \"low\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 项目初始化\n- [ ] 创建项目目录\n- [ ] 选择编程语言（例如：Python）\n- [ ] 选择开发环境（例如：PyCharm, VS Code）\n- [ ] 安装必要的库（例如：pygame）\n- [ ] 创建主程序文件（例如：main.py）\n\n## 游戏窗口初始化\n- [ ] 初始化pygame\n- [ ] 设置游戏窗口的宽度和高度\n- [ ] 创建游戏窗口\n- [ ] 设置窗口标题\n\n## 游戏元素定义\n- [ ] 定义蛇的初始位置、长度和颜色\n- [ ] 定义食物的初始位置和颜色\n- [ ] 定义游戏区域的边界\n- [ ] 定义蛇的移动方向（上下左右）\n\"\n    },\n    {\n      \"name\": \"蛇的移动与控制\",\n      \"description\": \"实现蛇的移动逻辑，包括根据方向更新蛇的位置，以及处理用户输入控制蛇的移动方向。\",\n      \"complexity\": \"medium\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 蛇的移动\n- [ ] 创建蛇的类或数据结构来表示蛇\n- [ ] 实现蛇的移动函数，根据当前方向更新蛇的位置\n- [ ] 确保蛇的身体跟随头部移动\n- [ ] 实现蛇的身体增长逻辑（吃到食物后）\n\n## 用户输入处理\n- [ ] 监听键盘事件\n- [ ] 根据用户按键改变蛇的移动方向\n- [ ] 确保蛇不能反向移动（例如，不能从向右直接变为向左）\n\n## 边界检测\n- [ ] 检测蛇是否超出游戏区域边界\n- [ ] 如果超出边界，则结束游戏或进行特殊处理（例如，从另一侧出现）\n\"\n    },\n    {\n      \"name\": \"食物生成与碰撞检测\",\n      \"description\": \"实现食物的随机生成，并检测蛇是否吃到食物。吃到食物后，蛇的长度增加，并生成新的食物。\",\n      \"complexity\": \"medium\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 食物生成\n- [ ] 实现食物的随机生成函数\n- [ ] 确保食物生成在游戏区域内\n- [ ] 避免食物生成在蛇的身体上\n\n## 碰撞检测\n- [ ] 检测蛇的头部是否与食物碰撞\n- [ ] 如果碰撞，则增加蛇的长度\n- [ ] 重新生成食物\n\n## 得分计算\n- [ ] 记录游戏得分\n- [ ] 吃到食物后，增加得分\n- [ ] 在游戏界面上显示得分\n\"\n    },\n    {\n      \"name\": \"游戏结束逻辑\",\n      \"description\": \"实现游戏结束的逻辑，包括蛇撞到自身或超出边界的情况。游戏结束后，显示游戏结果并提供重新开始的选项。\",\n      \"complexity\": \"medium\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 碰撞检测（自身）\n- [ ] 检测蛇的头部是否与身体碰撞\n- [ ] 如果碰撞，则游戏结束\n\n## 游戏结束处理\n- [ ] 停止游戏循环\n- [ ] 显示游戏结束界面\n- [ ] 显示最终得分\n- [ ] 提供重新开始游戏的选项\n\n## 重新开始游戏\n- [ ] 重置蛇的位置和长度\n- [ ] 重置食物的位置\n- [ ] 重置得分\n- [ ] 重新开始游戏循环\n\"\n    },\n    {\n      \"name\": \"界面美化与用户体验\",\n      \"description\": \"美化游戏界面，提高用户体验。可以包括添加背景、改变颜色、添加音效等。\",\n      \"complexity\": \"low\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 界面美化\n- [ ] 选择合适的颜色方案\n- [ ] 添加背景图片或颜色\n- [ ] 使用不同的颜色或图案表示蛇和食物\n- [ ] 优化游戏界面布局\n\n## 音效添加\n- [ ] 添加吃到食物的音效\n- [ ] 添加游戏结束的音效\n- [ ] 可以添加背景音乐\n\n## 用户交互优化\n- [ ] 添加难度选择\n- [ ] 添加暂停/继续功能\n- [ ] 添加排行榜功能（可选）\n\"\n    },\n    {\n      \"name\": \"代码测试与优化\",\n      \"description\": \"对代码进行测试，修复bug，并进行性能优化。\",\n      \"complexity\": \"medium\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 代码测试\n- [ ] 测试蛇的移动是否正确\n- [ ] 测试食物生成是否随机\n- [ ] 测试碰撞检测是否准确\n- [ ] 测试游戏结束逻辑是否正确\n- [ ] 测试重新开始游戏功能是否正常\n\n## Bug修复\n- [ ] 修复测试过程中发现的bug\n- [ ] 解决潜在的性能问题\n\n## 性能优化\n- [ ] 优化游戏循环，提高帧率\n- [ ] 减少资源占用\n- [ ] 提高代码的可读性和可维护性\n\"\n    }\n  ],\n  \"execution_plan\": \"本执行计划将贪吃蛇游戏的开发分解为六个主要任务：项目初始化与环境搭建、蛇的移动与控制、食物生成与碰撞检测、游戏结束逻辑、界面美化与用户体验、以及代码测试与优化。每个任务都包含详细的子任务，并按照逻辑顺序执行。通过逐步完成这些任务，最终实现一个完整的贪吃蛇游戏。\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742371319,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":1357,"prompt_tokens":366,"total_tokens":1723}}
+2025-03-19 16:01:59,714 - ASN.llm - DEBUG - ✅ [调试模式] API响应详情
+2025-03-19 16:01:59,714 - ASN.llm - DEBUG - Status Code: 200
+2025-03-19 16:01:59,715 - ASN.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Wed, 19 Mar 2025 08:01:59 GMT', 'server': 'deno/gcp-us-west2', 'server-timing': 'gfet4t7; dur=7650', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '2905', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-19 16:01:59,716 - ASN.llm - DEBUG - Full Response: {"id":"chatcmpl-O0utNlGoc2YTXvDPWl2LqTxEVVxmC","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n  \"analysis\": \"用户需要一个贪吃蛇游戏程序。需要考虑游戏的基本元素（蛇、食物、游戏区域）、游戏逻辑（蛇的移动、碰撞检测、食物生成、得分）、用户交互（控制蛇的移动）、以及可能的扩展功能（难度选择、排行榜等）。为了提供一个详细的执行计划，我将程序分解为多个模块，并为每个模块制定具体的任务。\",\n  \"tasks\": [\n    {\n      \"name\": \"项目初始化与环境搭建\",\n      \"description\": \"创建项目目录，选择合适的编程语言和开发环境，并搭建基本的开发框架。\",\n      \"complexity\": \"low\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 项目初始化\n- [ ] 创建项目目录\n- [ ] 选择编程语言（例如：Python）\n- [ ] 选择开发环境（例如：PyCharm, VS Code）\n- [ ] 安装必要的库（例如：pygame）\n- [ ] 创建主程序文件（例如：main.py）\n\n## 游戏窗口初始化\n- [ ] 初始化pygame\n- [ ] 设置游戏窗口的宽度和高度\n- [ ] 创建游戏窗口\n- [ ] 设置窗口标题\n\n## 游戏元素定义\n- [ ] 定义蛇的初始位置、长度和颜色\n- [ ] 定义食物的初始位置和颜色\n- [ ] 定义游戏区域的边界\n- [ ] 定义蛇的移动方向（上下左右）\n\"\n    },\n    {\n      \"name\": \"蛇的移动与控制\",\n      \"description\": \"实现蛇的移动逻辑，包括根据方向更新蛇的位置，以及处理用户输入控制蛇的移动方向。\",\n      \"complexity\": \"medium\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 蛇的移动\n- [ ] 创建蛇的类或数据结构来表示蛇\n- [ ] 实现蛇的移动函数，根据当前方向更新蛇的位置\n- [ ] 确保蛇的身体跟随头部移动\n- [ ] 实现蛇的身体增长逻辑（吃到食物后）\n\n## 用户输入处理\n- [ ] 监听键盘事件\n- [ ] 根据用户按键改变蛇的移动方向\n- [ ] 确保蛇不能反向移动（例如，不能从向右直接变为向左）\n\n## 边界检测\n- [ ] 检测蛇是否超出游戏区域边界\n- [ ] 如果超出边界，则结束游戏或进行特殊处理（例如，从另一侧出现）\n\"\n    },\n    {\n      \"name\": \"食物生成与碰撞检测\",\n      \"description\": \"实现食物的随机生成，并检测蛇是否吃到食物。吃到食物后，蛇的长度增加，并生成新的食物。\",\n      \"complexity\": \"medium\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 食物生成\n- [ ] 实现食物的随机生成函数\n- [ ] 确保食物生成在游戏区域内\n- [ ] 避免食物生成在蛇的身体上\n\n## 碰撞检测\n- [ ] 检测蛇的头部是否与食物碰撞\n- [ ] 如果碰撞，则增加蛇的长度\n- [ ] 重新生成食物\n\n## 得分计算\n- [ ] 记录游戏得分\n- [ ] 吃到食物后，增加得分\n- [ ] 在游戏界面上显示得分\n\"\n    },\n    {\n      \"name\": \"游戏结束逻辑\",\n      \"description\": \"实现游戏结束的逻辑，包括蛇撞到自身或超出边界的情况。游戏结束后，显示游戏结果并提供重新开始的选项。\",\n      \"complexity\": \"medium\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 碰撞检测（自身）\n- [ ] 检测蛇的头部是否与身体碰撞\n- [ ] 如果碰撞，则游戏结束\n\n## 游戏结束处理\n- [ ] 停止游戏循环\n- [ ] 显示游戏结束界面\n- [ ] 显示最终得分\n- [ ] 提供重新开始游戏的选项\n\n## 重新开始游戏\n- [ ] 重置蛇的位置和长度\n- [ ] 重置食物的位置\n- [ ] 重置得分\n- [ ] 重新开始游戏循环\n\"\n    },\n    {\n      \"name\": \"界面美化与用户体验\",\n      \"description\": \"美化游戏界面，提高用户体验。可以包括添加背景、改变颜色、添加音效等。\",\n      \"complexity\": \"low\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 界面美化\n- [ ] 选择合适的颜色方案\n- [ ] 添加背景图片或颜色\n- [ ] 使用不同的颜色或图案表示蛇和食物\n- [ ] 优化游戏界面布局\n\n## 音效添加\n- [ ] 添加吃到食物的音效\n- [ ] 添加游戏结束的音效\n- [ ] 可以添加背景音乐\n\n## 用户交互优化\n- [ ] 添加难度选择\n- [ ] 添加暂停/继续功能\n- [ ] 添加排行榜功能（可选）\n\"\n    },\n    {\n      \"name\": \"代码测试与优化\",\n      \"description\": \"对代码进行测试，修复bug，并进行性能优化。\",\n      \"complexity\": \"medium\",\n      \"task_structure\": \"# 贪吃蛇游戏 TODO\n\n## 代码测试\n- [ ] 测试蛇的移动是否正确\n- [ ] 测试食物生成是否随机\n- [ ] 测试碰撞检测是否准确\n- [ ] 测试游戏结束逻辑是否正确\n- [ ] 测试重新开始游戏功能是否正常\n\n## Bug修复\n- [ ] 修复测试过程中发现的bug\n- [ ] 解决潜在的性能问题\n\n## 性能优化\n- [ ] 优化游戏循环，提高帧率\n- [ ] 减少资源占用\n- [ ] 提高代码的可读性和可维护性\n\"\n    }\n  ],\n  \"execution_plan\": \"本执行计划将贪吃蛇游戏的开发分解为六个主要任务：项目初始化与环境搭建、蛇的移动与控制、食物生成与碰撞检测、游戏结束逻辑、界面美化与用户体验、以及代码测试与优化。每个任务都包含详细的子任务，并按照逻辑顺序执行。通过逐步完成这些任务，最终实现一个完整的贪吃蛇游戏。\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742371319,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":1357,"prompt_tokens":366,"total_tokens":1723}}
+2025-03-19 16:01:59,720 - ASN.agent.planning - INFO - ✅ 成功接收LLM规划响应
+2025-03-19 16:01:59,721 - ASN.agent.planning - ERROR - 规划结果解析失败: Expecting value: line 1 column 1 (char 0)
+2025-03-19 16:01:59,722 - ASN.memory.memory_manager - INFO - 保存文件成功: c:\Users\Administrator\Desktop\Autopilot-System-Next\Autopilot-System-Next\memory\planning_result.json
