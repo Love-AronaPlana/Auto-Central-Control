@@ -1,0 +1,82 @@
+2025-03-19 22:21:55,761 - ASN.workflow - INFO - 初始化工作流程控制器
+2025-03-19 22:21:55,764 - ASN.memory.memory_manager - INFO - 已清空TODO目录: e:\Program\Autopilot-System-Next\Autopilot-System-Next\ASN\memory\todo
+2025-03-19 22:21:55,764 - ASN.agent.analysis - INFO - 初始化分析代理
+2025-03-19 22:21:55,765 - ASN.agent.planning - INFO - 规划Agent初始化完成
+2025-03-19 22:21:55,765 - ASN.agent.ordinary_reply - INFO - 初始化普通回复代理
+2025-03-19 22:21:55,765 - ASN.workflow - INFO - 开始执行工作流程，用户输入: 写一个打坦克游戏
+2025-03-19 22:21:55,765 - ASN.workflow - INFO - 🔄 正在询问分析Agent...
+2025-03-19 22:21:55,766 - ASN.agent.analysis - INFO - 开始分析用户需求: 写一个打坦克游戏
+2025-03-19 22:21:55,766 - ASN.agent.analysis - INFO - 🔄 正在向LLM发送分析请求...
+2025-03-19 22:21:55,766 - ASN.llm - DEBUG - 🔍 [调试模式] LLM配置已加载
+2025-03-19 22:21:55,767 - ASN.llm - DEBUG - 当前调试模式状态: True
+2025-03-19 22:21:55,767 - ASN.llm - DEBUG - 完整配置内容: {
+  "model": "gemini-2.0-flash",
+  "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+  "api_key": "AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE",
+  "max_tokens": 4096,
+  "temperature": 0.3,
+  "debug": true,
+  "vision": {
+    "model": "gemini-2.0-flash",
+    "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+    "api_key": "AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM"
+  }
+}
+2025-03-19 22:21:55,770 - ASN.llm - INFO - LLM客户端初始化完成，使用模型: gemini-2.0-flash
+2025-03-19 22:21:55,771 - ASN.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-19 22:21:55,773 - ASN.llm - DEBUG - URL: https://gemini-api-gavinchen.deno.dev/v1/chat/completions
+2025-03-19 22:21:55,774 - ASN.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE'}
+2025-03-19 22:21:55,775 - ASN.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个分析专家，负责分析用户的需求是否需要进行任务规划。\n\n你需要根据用户的输入，判断是否需要进行任务规划。判断标准如下：\n1. 如果用户的需求涉及多个步骤或复杂的任务流程，需要规划\n2. 如果用户的需求需要创建或修改多个文件，需要规划\n3. 如果用户的需求涉及到系统架构或重要功能的修改，需要规划\n4. 如果是简单的单一操作（如查看文件、打开文件等），不需要规划\n\n任务复杂度评估标准：\n- high: 涉及多个模块/文件，需要仔细规划和协调\n- medium: 涉及2-3个相关操作，需要一定规划\n- low: 单一简单操作，无需特别规划\n\n你需要以JSON格式回复，包含以下字段：\n{\n    \"need_planning\": true/false,  # 是否需要规划\n    \"reason\": \"具体原因\",  # 为什么需要/不需要规划\n    \"complexity\": \"high/medium/low\"  # 任务复杂度\n}\n\n用户输入: {user_input}\n"
+    },
+    {
+      "role": "user",
+      "content": "分析需求：写一个打坦克游戏\n请判断是否需要任务规划"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false
+}
+2025-03-19 22:21:55,796 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api-gavinchen.deno.dev:443
+2025-03-19 22:21:58,066 - urllib3.connectionpool - DEBUG - https://gemini-api-gavinchen.deno.dev:443 "POST /v1/chat/completions HTTP/1.1" 200 557
+2025-03-19 22:21:58,070 - ASN.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-19 22:21:58,071 - ASN.llm - DEBUG - Status Code: 200
+2025-03-19 22:21:58,073 - ASN.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Wed, 19 Mar 2025 14:21:58 GMT', 'server': 'deno/gcp-asia-southeast1', 'server-timing': 'gfet4t7; dur=1802', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '557', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-19 22:21:58,076 - ASN.llm - DEBUG - Full Response: {"id":"chatcmpl-QwwtAU9IwkDhDeyg9ARqOzl4rGysO","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n    \"need_planning\": true,\n    \"reason\": \"开发一个打坦克游戏涉及多个步骤，包括游戏引擎选择、游戏逻辑设计、美术资源制作、用户界面设计、测试和优化等，需要进行详细的任务规划。\",\n    \"complexity\": \"high\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742394118,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":69,"prompt_tokens":241,"total_tokens":310}}
+2025-03-19 22:21:58,079 - ASN.agent.analysis - INFO - ✅ 成功接收LLM分析响应
+2025-03-19 22:21:58,081 - ASN.workflow - INFO - 🔄 正在询问规划Agent...
+2025-03-19 22:21:58,082 - ASN.agent.planning - INFO - 规划Agent开始处理用户输入: 写一个打坦克游戏
+2025-03-19 22:21:58,082 - ASN.agent.planning - INFO - 🔄 正在向LLM发送规划请求...
+2025-03-19 22:21:58,083 - ASN.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-19 22:21:58,084 - ASN.llm - DEBUG - URL: https://gemini-api-gavinchen.deno.dev/v1/chat/completions
+2025-03-19 22:21:58,085 - ASN.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE'}
+2025-03-19 22:21:58,086 - ASN.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是ASN的任务规划Agent，负责分析用户需求并创建详细的执行计划。\n\n你的任务是：\n1. 仔细分析用户的需求\n2. 将需求分解为明确的步骤和任务\n3. 创建一个及其详细的结构化的执行计划\n4. 以Markdown格式返回执行计划\n\n你的输出必须是有效的Markdown格式，请严格按照以下格式回复：\n\n{\n  \"analysis\": \"对用户需求的分析\",\n  \"tasks\": {\n    \"task_name\": \"代办总名称\",\n    \"description\": \"任务描述\",\n    \"complexity\": \"low/medium/high\",\n    \"task_structure\": \"<任务> TODO\n\n## 1. <一级任务列表>\n- [ ] 1.1 <二级任务描述>\n- [ ] 1.2 <二级任务描述>\n- [ ] 1.3 <二级任务描述>\n\n## 2. <一级任务列表>\n- [ ] 2.1 <二级任务描述>\n- [ ] 2.2 <二级任务描述>\n- [ ] 2.3 <二级任务描述>\n...\"  // 注意：任务结构必须是Markdown格式的TODO列表，且只能将所有TODO放在同一个Markdown列表内。一级任务列表不可添加\"[ ]\"。\n    },\n  \"execution_plan\": \"执行计划的总体描述\"\n}\n\n注意：\n只能含有一个task_structure。\n请确保你的分析全面、任务分解合理，并考虑任务之间的依赖关系。\n只能包含有一级任务和二级任务，且二级任务必须在一级任务下，不可创建三级任务。\n"
+    },
+    {
+      "role": "user",
+      "content": "请分析以下用户需求，并创建一个非常详细的执行计划：\n\n写一个打坦克游戏\n\n请以JSON格式返回你的规划结果。\n"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false
+}
+2025-03-19 22:21:58,094 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api-gavinchen.deno.dev:443
+2025-03-19 22:22:04,249 - urllib3.connectionpool - DEBUG - https://gemini-api-gavinchen.deno.dev:443 "POST /v1/chat/completions HTTP/1.1" 200 2128
+2025-03-19 22:22:04,257 - ASN.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-19 22:22:04,259 - ASN.llm - DEBUG - Status Code: 200
+2025-03-19 22:22:04,261 - ASN.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Wed, 19 Mar 2025 14:22:04 GMT', 'server': 'deno/gcp-asia-southeast1', 'server-timing': 'gfet4t7; dur=5698', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '2128', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-19 22:22:04,263 - ASN.llm - DEBUG - Full Response: {"id":"chatcmpl-4D4hewiJMraZBW4KcdTnvVyeKPFgv","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n  \"analysis\": \"用户需要开发一个打坦克游戏。这个需求可以分解为游戏引擎选择、游戏场景设计、坦克设计、AI设计、UI设计、音效设计、测试与优化等多个方面。需要详细规划每个环节的具体任务，并考虑任务之间的依赖关系。\",\n  \"tasks\": {\n    \"game_development\": \"开发打坦克游戏\",\n    \"description\": \"根据用户需求，开发一个完整的打坦克游戏，包含游戏引擎选择、场景设计、坦克设计、AI设计、UI设计、音效设计、测试与优化等环节。\",\n    \"complexity\": \"high\",\n    \"task_structure\": \"打坦克游戏 TODO\n\n## 1. 游戏引擎选择\n- [ ] 1.1 调研主流游戏引擎（Unity, Unreal Engine, Godot等）的优缺点\n- [ ] 1.2 评估项目需求（2D/3D, 性能要求, 平台支持等）\n- [ ] 1.3 选择合适的游戏引擎 (例如：Unity)\n- [ ] 1.4 搭建游戏引擎开发环境\n\n## 2. 游戏场景设计\n- [ ] 2.1 确定游戏场景风格（例如：沙漠, 草地, 城市等）\n- [ ] 2.2 设计游戏地图（包括地形, 障碍物, 掩体等）\n- [ ] 2.3 创建游戏场景资源（可以使用现成资源或自行制作）\n- [ ] 2.4 在游戏引擎中搭建游戏场景\n\n## 3. 坦克设计\n- [ ] 3.1 设计玩家坦克的外观和属性（生命值, 攻击力, 移动速度等）\n- [ ] 3.2 设计敌方坦克的外观和属性（不同类型的敌方坦克）\n- [ ] 3.3 创建坦克模型和动画\n- [ ] 3.4 实现坦克移动控制（键盘/触摸）\n- [ ] 3.5 实现坦克炮塔旋转控制\n- [ ] 3.6 实现坦克发射炮弹功能\n- [ ] 3.7 实现炮弹的碰撞检测和伤害计算\n\n## 4. AI设计\n- [ ] 4.1 设计敌方坦克的AI行为模式（巡逻, 追踪, 攻击等）\n- [ ] 4.2 实现敌方坦克的路径规划\n- [ ] 4.3 实现敌方坦克的自动瞄准和射击\n- [ ] 4.4 调整AI难度\n\n## 5. UI设计\n- [ ] 5.1 设计游戏主菜单（开始游戏, 设置, 退出等）\n- [ ] 5.2 设计游戏界面（生命值显示, 得分显示, 迷你地图等）\n- [ ] 5.3 设计游戏结束界面（胜利/失败, 得分统计等）\n- [ ] 5.4 实现UI元素的交互功能\n\n## 6. 音效设计\n- [ ] 6.1 收集或制作游戏音效（坦克引擎声, 炮弹发射声, 爆炸声等）\n- [ ] 6.2 将音效添加到游戏中\n- [ ] 6.3 调整音效的音量和效果\n\n## 7. 游戏逻辑实现\n- [ ] 7.1 实现游戏开始和结束逻辑\n- [ ] 7.2 实现得分计算和显示\n- [ ] 7.3 实现游戏难度调整\n- [ ] 7.4 实现游戏暂停和恢复功能\n\n## 8. 测试与优化\n- [ ] 8.1 进行游戏功能测试\n- [ ] 8.2 进行游戏性能测试\n- [ ] 8.3 修复bug\n- [ ] 8.4 优化游戏性能\n\n## 9. 部署\n- [ ] 9.1 打包游戏\n- [ ] 9.2 发布到目标平台（例如：PC, Android, iOS）\n\"\n    },\n  \"execution_plan\": \"首先选择合适的游戏引擎，然后进行游戏场景、坦克、AI和UI的设计与实现。接着添加音效，实现游戏逻辑，进行充分的测试与优化，最后将游戏部署到目标平台。\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742394124,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":921,"prompt_tokens":383,"total_tokens":1304}}
+2025-03-19 22:22:04,268 - ASN.agent.planning - INFO - ✅ 成功接收LLM规划响应
+2025-03-19 22:22:04,274 - ASN.agent.planning - INFO - 保存规划文件成功: e:\Program\Autopilot-System-Next\Autopilot-System-Next\ASN\memory\todo\planning.md
+2025-03-19 22:22:04,277 - ASN.memory.memory_manager - INFO - 保存文件成功: e:\Program\Autopilot-System-Next\Autopilot-System-Next\ASN\memory\planning_result.json
