@@ -15,11 +15,9 @@ from typing import Dict, Any
 from ASN.agent.planning import PlanningAgent
 from ASN.agent.analysis import AnalysisAgent
 from ASN.memory.memory_manager import MemoryManager
-from ASN.agent.ordinary_reply import OrdinaryReplyAgent
 
 logger = logging.getLogger(__name__)
 
-from ASN.agent.ordinary_reply import OrdinaryReplyAgent
 
 # 在顶部添加导入
 from ASN.agent.refinement import RefinementAgent
@@ -32,18 +30,19 @@ class Workflow:
         """初始化工作流程控制器"""
         logger.info("初始化工作流程控制器")
 
-        # 清空TODO目录
-        MemoryManager.clean_todo_directory()
+        # 清空历史记录（新增）
+        MemoryManager.clean_history_file()
 
+        # 原有清空目录操作
+        MemoryManager.clean_todo_directory()
         MemoryManager.clean_refinement_directory()
 
-        # 初始化Agent
+        # 初始化Agent（原有代码）
         self.analysis_agent = AnalysisAgent()
         self.planning_agent = PlanningAgent()
-        self.refinement_agent = RefinementAgent()  # 新增细化Agent
-        self.ordinary_reply_agent = OrdinaryReplyAgent()
+        self.refinement_agent = RefinementAgent()
 
-        # 确保必要的目录存在
+        # 确保目录存在（原有代码）
         self._ensure_directories()
 
     def _ensure_directories(self):

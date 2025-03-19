@@ -188,6 +188,18 @@ class MemoryManager:
             shutil.rmtree(refinement_dir)
         os.makedirs(refinement_dir, exist_ok=True)
 
+    @staticmethod
+    def clean_history_file():
+        """清空历史记录文件"""
+        file_path = os.path.join(MEMORY_DIR, "history.json")
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("[]")
+            logger.info(f"已清空历史记录文件: {file_path}")
+        except Exception as e:
+            logger.error(f"清空历史记录文件失败: {e}")
+            raise
+
 
 # 创建全局内存管理器实例
 _memory_manager = None

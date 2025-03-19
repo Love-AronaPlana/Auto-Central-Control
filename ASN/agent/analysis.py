@@ -10,6 +10,7 @@ from typing import Dict, Any
 from ASN.agent.base import BaseAgent
 from ASN.prompt.analysis import ANALYSIS_PROMPT
 from ASN.prompt.planning import FIRST_STEP_PROMPT
+from ASN.memory.memory_manager import MemoryManager
 
 logger = logging.getLogger(__name__)
 
@@ -27,22 +28,54 @@ class AnalysisAgent(BaseAgent):
         logger.info(f"开始分析用户需求: {user_input}")
 
         try:
+            # 读取历史记录（新增）
+            history = MemoryManager.read_json("history.json")
 
+            # 构建消息上下文（重要修改）
             self.reset_messages()
-            self.add_message("user", FIRST_STEP_PROMPT.format(user_input=user_input))
 
-            logger.info("🔄 正在向LLM发送分析请求...")
-            response = self.send_to_llm()
+            # 添加历史对话（新增逻辑）
+            for msg in history:
+                if msg["role"] == "system":
+                    # 只在第一次运行时保留系统提示
+                    if not any(m["role"] == "system" for m in self.messages):
+                        self.messages.append(msg)
+                else:
+                    self.messages.append(msg)
 
-            # 解析响应（保持原有逻辑）
+            # 添加当前用户输入（保留原有逻辑）
+            self.add_message("user", user_input)
+
+            # 发送给LLM前的处理（新增格式化）
+            formatted_messages = [
+                {
+                    "role": m["role"],
+                    "content": (
+                        FIRST_STEP_PROMPT.format(user_input=m["content"])
+                        if m["role"] == "user"
+                        else m["content"]
+                    ),
+                }
+                for m in self.messages
+            ]
+
+            # 发送请求（修改为使用格式化后的消息）
+            response = self.send_to_llm(formatted_messages)
             result = self.parse_json_response(response)
+
+            # 更新历史记录（保留原有逻辑）
+            MemoryManager.save_json(
+                "history.json",
+                self.messages
+                + [{"role": "analysis_agent", "content": result.get("message", "")}],
+            )
+
             return result
 
         except Exception as e:
             logger.error(f"分析过程出错: {str(e)}")
-            # 修改异常返回结构以匹配新提示词格式
             return {
                 "message": f"分析过程出错: {str(e)}",
                 "need_planning": False,
-                "complexity": "none",  # 出错时标记为无需规划
+                "complexity": "none",
             }
