@@ -21,6 +21,9 @@ logger = logging.getLogger(__name__)
 
 from ASN.agent.ordinary_reply import OrdinaryReplyAgent
 
+# 在顶部添加导入
+from ASN.agent.refinement import RefinementAgent
+
 
 class Workflow:
     """ASN工作流程控制类"""
@@ -32,9 +35,12 @@ class Workflow:
         # 清空TODO目录
         MemoryManager.clean_todo_directory()
 
+        MemoryManager.clean_refinement_directory()
+
         # 初始化Agent
         self.analysis_agent = AnalysisAgent()
         self.planning_agent = PlanningAgent()
+        self.refinement_agent = RefinementAgent()  # 新增细化Agent
         self.ordinary_reply_agent = OrdinaryReplyAgent()
 
         # 确保必要的目录存在
@@ -54,7 +60,6 @@ class Workflow:
     def execute(self, user_input: str) -> Dict[str, Any]:
         """执行工作流程"""
         while True:
-            # 新增退出条件检查
             if user_input.strip().lower() in ("exit", "退出"):
                 return {"status": "exit", "message": "用户请求退出系统"}
 
@@ -66,17 +71,23 @@ class Workflow:
                 analysis_result = self.analysis_agent.run(user_input)
 
                 if analysis_result.get("need_planning", True):
-                    # 规划流程（执行后退出）
+                    # 2. 运行规划Agent
                     logger.info("🔄 正在询问规划Agent...")
                     planning_result = self.planning_agent.run(user_input)
                     MemoryManager.save_json("planning_result.json", planning_result)
 
+                    # 3. 新增：调用细化Agent
+                    logger.info("🔄 正在调用细化Agent...")
+                    refinement_result = self.refinement_agent.run()
+
                     return {
                         "status": "success",
-                        "message": "完成需求分析和任务规划",
+                        "message": "完成需求分析、任务规划和步骤细化",
                         "analysis_result": analysis_result,
                         "planning_result": planning_result,
+                        "refinement_result": refinement_result,  # 新增细化结果
                     }
+
                 else:
                     # 普通回复流程（保持循环）
                     logger.info("🔄 正在询问普通回复Agent...")

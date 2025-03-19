@@ -7,6 +7,7 @@
 import json
 import logging
 import os
+import shutil  # 添加缺失的shutil模块导入
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
@@ -178,6 +179,14 @@ class MemoryManager:
                 except Exception as e:
                     logger.error(f"删除文件失败 {file_path}: {e}")
             logger.info(f"已清空TODO目录: {todo_dir}")
+
+    @staticmethod
+    def clean_refinement_directory():
+        """清空细化目录"""
+        refinement_dir = os.path.join(MEMORY_DIR, "todo", "refinement")
+        if os.path.exists(refinement_dir):
+            shutil.rmtree(refinement_dir)
+        os.makedirs(refinement_dir, exist_ok=True)
 
 
 # 创建全局内存管理器实例
