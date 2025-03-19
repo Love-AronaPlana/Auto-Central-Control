@@ -9,9 +9,19 @@ import logging
 import os
 from typing import Dict, List, Optional, Union, Any
 
+# 在文件顶部添加以下导入
+import sys
+import gzip
+import json
+from json import JSONDecodeError
+
 import requests
 
 from ASN.config import get_config, get_llm_config
+
+import os
+
+os.environ["PYTHONLEGACYWINDOWSSTDIO"] = "utf-8"  # 针对Windows终端的特殊处理
 
 logger = logging.getLogger(__name__)
 
@@ -368,52 +378,40 @@ def send_message_stream(
 
 
 def parse_json_response(response: Dict[str, Any]) -> Dict[str, Any]:
-    """解析JSON格式的响应
-
-    Args:
-        response: API响应字典
-
-    Returns:
-        解析后的JSON字典
-    """
-    content = response.get("content", "")
-
-    if not content:
-        logger.warning("响应内容为空")
-        return {}
-
-    # 增强的预处理逻辑
     try:
-        # 使用正则表达式匹配所有代码块
+        # 移除错误的Unicode转义处理
+        content = response.get("content", "")
+        # 直接使用原始内容（已通过process_response正确解码）
         import re
 
-        json_pattern = re.compile(r"```json(.*?)```", re.DOTALL)
-        matches = json_pattern.findall(content)
+        json_pattern = re.compile(r"```(?:json)?\s*({.*?})\s*```", re.DOTALL)
+        match = json_pattern.search(content)
 
-        if matches:
-            # 取最后一个匹配的代码块（防止多次对话干扰）
-            content = matches[-1].strip()
+        if match:
+            content = match.group(1)
         else:
-            # 尝试提取可能的JSON部分
-            content = content.replace("```json", "").replace("```", "").strip()
+            # 直接尝试解析整个内容
+            content = content.strip()
 
-        # 处理控制字符
-        content = json.dumps(content)[1:-1]  # 转义特殊字符
-
-        # 尝试解析JSON
+        # 移除换行和多余空格（保留中文空格）
+        content = " ".join(content.split())
         return json.loads(content)
-    except json.JSONDecodeError as e:
-        logger.error(f"解析JSON失败: {e}")
-        logger.error(f"预处理后的内容: {content}")
 
-        # 二次尝试：提取第一个{和最后一个}之间的内容
-        try:
-            start = content.find("{")
-            end = content.rfind("}")
-            if start != -1 and end != -1 and end > start:
-                json_str = content[start : end + 1]
-                return json.loads(json_str)
-            return {}
-        except Exception as e2:
-            logger.error(f"二次解析失败: {e2}")
-            return {}
+    except Exception as e:
+        logger.error(f"解析JSON失败: {str(e)}")
+        logger.error(f"原始内容: {response.get('content', '')}")
+        logger.error(f"预处理后的内容: {content}")
+        return {}
+
+
+def process_response(response):
+    try:
+        # 强制使用UTF-8解码（即使服务器声明其他编码）
+        data = response.data.decode("utf-8", errors="replace")  # 添加错误处理
+
+        logger.debug(f"解码后响应内容: {data}")
+        return json.loads(data)
+    except JSONDecodeError as e:
+        logger.error(f"JSON解析失败: {str(e)}")
+        logger.debug(f"原始响应内容: {data[:500]}")  # 记录前500字符
+        return {}
