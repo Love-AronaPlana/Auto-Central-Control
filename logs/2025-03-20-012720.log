@@ -1,0 +1,76 @@
+2025-03-20 01:27:23,089 - ASN.workflow - INFO - 初始化工作流程控制器
+2025-03-20 01:27:23,089 - ASN.memory.memory_manager - INFO - 已清空TODO目录: e:\Program\Autopilot-System-Next\Autopilot-System-Next\ASN\memory\todo
+2025-03-20 01:27:23,090 - ASN.agent.analysis - INFO - 初始化分析代理
+2025-03-20 01:27:23,091 - ASN.agent.planning - INFO - 规划Agent初始化完成
+2025-03-20 01:27:23,091 - ASN.agent.ordinary_reply - INFO - 初始化普通回复代理
+2025-03-20 01:27:23,092 - ASN.workflow - INFO - 开始执行工作流程，用户输入: 介绍一下你自己
+2025-03-20 01:27:23,092 - ASN.workflow - INFO - 🔄 正在询问分析Agent...
+2025-03-20 01:27:23,093 - ASN.agent.analysis - INFO - 开始分析用户需求: 介绍一下你自己
+2025-03-20 01:27:23,093 - ASN.agent.analysis - INFO - 🔄 正在向LLM发送分析请求...
+2025-03-20 01:27:23,093 - ASN.llm - DEBUG - 🔍 [调试模式] LLM配置已加载
+2025-03-20 01:27:23,094 - ASN.llm - DEBUG - 当前调试模式状态: True
+2025-03-20 01:27:23,094 - ASN.llm - DEBUG - 完整配置内容: {
+  "model": "gemini-2.0-flash",
+  "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+  "api_key": "AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE",
+  "max_tokens": 4096,
+  "temperature": 0.3,
+  "debug": true,
+  "vision": {
+    "model": "gemini-2.0-flash",
+    "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+    "api_key": "AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM"
+  }
+}
+2025-03-20 01:27:23,095 - ASN.llm - INFO - LLM客户端初始化完成，使用模型: gemini-2.0-flash
+2025-03-20 01:27:23,096 - ASN.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-20 01:27:23,097 - ASN.llm - DEBUG - URL: https://gemini-api-gavinchen.deno.dev/v1/chat/completions
+2025-03-20 01:27:23,097 - ASN.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE'}
+2025-03-20 01:27:23,098 - ASN.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个分析专家，负责分析用户的需求是否需要进行任务规划。\n\n你需要根据用户的输入，判断是否需要进行任务规划。判断标准如下：\n1. 如果用户的需求涉及多个步骤或复杂的任务流程，需要规划\n2. 如果用户的需求需要创建或修改多个文件，需要规划\n3. 如果用户的需求涉及到系统架构或重要功能的修改，需要规划\n4. 如果是简单的单一操作（如查看文件、打开文件等），不需要规划\n\n任务复杂度评估标准：\n- high: 涉及多个模块/文件，需要仔细规划和协调\n- medium: 涉及2-3个相关操作，需要一定规划\n- low: 单一简单操作，无需特别规划\n- none: 无需规划\n\n你需要以JSON格式回复，包含以下字段：\n{\n    \"message\": \"普通回复/none\" # 普通回复，无需规划的情况；none表示需要规划\n    \"need_planning\": true/false,  # 是否需要规划\n    \"complexity\": \"high/medium/low/none\"  # 任务复杂度\n}\n\n用户输入: {user_input}\n"
+    },
+    {
+      "role": "user",
+      "content": "请分析以下用户需求，并创建一个非常详细的执行计划：\n\n介绍一下你自己\n\n请以JSON格式返回你的规划结果。\n"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false
+}
+2025-03-20 01:27:23,106 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api-gavinchen.deno.dev:443
+2025-03-20 01:27:25,389 - urllib3.connectionpool - DEBUG - https://gemini-api-gavinchen.deno.dev:443 "POST /v1/chat/completions HTTP/1.1" 200 394
+2025-03-20 01:27:25,390 - ASN.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-20 01:27:25,391 - ASN.llm - DEBUG - Status Code: 200
+2025-03-20 01:27:25,391 - ASN.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Wed, 19 Mar 2025 17:27:25 GMT', 'server': 'deno/gcp-asia-southeast1', 'server-timing': 'gfet4t7; dur=1749', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '394', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-20 01:27:25,392 - ASN.llm - DEBUG - Full Response: {"id":"chatcmpl-86cLxpASixGIbOk3jK3HoJwiGW9L7","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n    \"message\": \"普通回复，无需规划\",\n    \"need_planning\": false,\n    \"complexity\": \"none\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742405246,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":37,"prompt_tokens":271,"total_tokens":308}}
+2025-03-20 01:27:25,394 - ASN.workflow - INFO - 🔄 正在询问普通回复Agent...
+2025-03-20 01:27:25,395 - ASN.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-20 01:27:25,395 - ASN.llm - DEBUG - URL: https://gemini-api-gavinchen.deno.dev/v1/chat/completions
+2025-03-20 01:27:25,396 - ASN.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE'}
+2025-03-20 01:27:25,396 - ASN.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个简单任务处理专家，负责处理不需要复杂规划的简单用户请求。请根据用户输入直接给出回复或执行简单操作。\n\n回复要求：\n1. 简洁自然的回复\n2. 避免使用技术术语\n3. 闲聊（例如天气、时间、你好吗）\n4. 礼貌地拒绝不恰当或有害的请求\n\n请用JSON格式返回：\n{\n    \"reply\": \"对用户的直接回复\",\n}\n用户输入：{user_input}"
+    },
+    {
+      "role": "user",
+      "content": "介绍一下你自己"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 4096,
+  "stream": false
+}
+2025-03-20 01:27:25,403 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api-gavinchen.deno.dev:443
+2025-03-20 01:27:26,463 - urllib3.connectionpool - DEBUG - https://gemini-api-gavinchen.deno.dev:443 "POST /v1/chat/completions HTTP/1.1" 200 420
+2025-03-20 01:27:26,468 - ASN.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-20 01:27:26,470 - ASN.llm - DEBUG - Status Code: 200
+2025-03-20 01:27:26,473 - ASN.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Wed, 19 Mar 2025 17:27:27 GMT', 'server': 'deno/gcp-asia-southeast1', 'server-timing': 'gfet4t7; dur=637', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '420', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-20 01:27:26,480 - ASN.llm - DEBUG - Full Response: {"id":"chatcmpl-rQSQRUXdRJLkKlDKLKLzF1SeCp7Ll","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n    \"reply\": \"我是一个简单的任务处理专家，可以帮你处理一些不需要复杂思考的任务。\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742405247,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":30,"prompt_tokens":112,"total_tokens":142}}

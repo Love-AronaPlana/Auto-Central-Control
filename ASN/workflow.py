@@ -76,7 +76,7 @@ class Workflow:
                     planning_result = self.planning_agent.run(user_input)
                     MemoryManager.save_json("planning_result.json", planning_result)
 
-                    # 3. 新增：调用细化Agent
+                    # 3. 调用细化Agent
                     logger.info("🔄 正在调用细化Agent...")
                     refinement_result = self.refinement_agent.run()
 
@@ -85,28 +85,38 @@ class Workflow:
                         "message": "完成需求分析、任务规划和步骤细化",
                         "analysis_result": analysis_result,
                         "planning_result": planning_result,
-                        "refinement_result": refinement_result,  # 新增细化结果
+                        "refinement_result": refinement_result,
                     }
 
-                else:
-                    # 普通回复流程（保持循环）
-                    logger.info("🔄 正在询问普通回复Agent...")
-                    ordinary_reply = self.ordinary_reply_agent.run(user_input)
+                # 不需要规划时直接进入新输入循环
+                print(
+                    f"\nAssistant: {analysis_result.get('message', '已收到您的请求')}"
+                )
 
-                    if reply_content := ordinary_reply.get("reply"):
-                        print(f"Assistant: {reply_content}")
+            except Exception as e:  # 确保此except与try对齐
+                logger.error(f"工作流程执行异常: {str(e)}")
+                print(f"\n系统错误: {str(e)}")
 
-                    # 获取新输入并检查退出命令
-                    user_input = input("\n用户：")
-                    continue  # 继续下一次循环
+            # 获取新输入（移到try-except块外）
+            print("\n请输入您的需求（按下两次回车键提交，输入'exit/退出'退出程序）:")
+            user_input = ""
+            while True:
+                line = input()
+                if line.lower() in ("exit", "退出"):
+                    return {"status": "exit", "message": "用户请求退出系统"}
+                if line == "":
+                    if len(user_input.splitlines()) >= 1:
+                        break
+                user_input += line + "\n"
 
-            except Exception as e:
-                logger.error(f"工作流程执行失败: {e}")
-                return {
-                    "status": "error",
-                    "message": f"工作流程执行失败: {str(e)}",
-                    "result": None,
-                }
+        # 删除以下多余的except块
+        # except Exception as e:  # 确保这个 except 与上层的 try 对齐
+        #    logger.error(f"工作流程执行失败: {e}")
+        #    return {
+        #        "status": "error",
+        #        "message": f"工作流程执行失败: {str(e)}",
+        #        "result": None,
+        #    }
 
 
 # 创建全局Workflow实例
