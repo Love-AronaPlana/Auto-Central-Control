@@ -121,10 +121,29 @@ class BaseAgent(ABC):
         """
         max_retries = 5
         retry_delay = 30  # 秒
+        request_timeout = 180  # 3分钟超时时间
         
         for attempt in range(1, max_retries + 1):
             try:
-                return func(*args, **kwargs)
+                # 添加超时控制
+                import threading
+                import concurrent.futures
+                
+                # 使用线程池执行函数，设置超时时间
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(func, *args, **kwargs)
+                    try:
+                        return future.result(timeout=request_timeout)
+                    except concurrent.futures.TimeoutError:
+                        # 请求超时，取消任务并抛出异常
+                        logger.warning(f"[{self.name}] 请求超时 (超过 {request_timeout} 秒)")
+                        # 尝试取消正在执行的任务
+                        for t in threading.enumerate():
+                            if t.name.startswith('ThreadPoolExecutor'):
+                                # 这里无法直接终止线程，但会在下一次循环中重新创建线程池
+                                pass
+                        raise TimeoutError(f"请求超时 (超过 {request_timeout} 秒)")
+                        
             except Exception as e:
                 logger.warning(f"[{self.name}] 操作失败 (尝试 {attempt}/{max_retries}): {str(e)}")
                 

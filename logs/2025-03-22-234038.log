@@ -1,7 +1,0 @@
-2025-03-22 23:40:40,306 - ACC.workflow - INFO - 初始化工作流程控制器
-2025-03-22 23:40:40,315 - ACC.memory.memory_manager - INFO - 已清空历史记录文件: e:\Program\Auto-Central-Control\Auto-Central-Control\ACC\memory\history.json
-2025-03-22 23:40:40,318 - ACC.memory.memory_manager - INFO - 已清空TODO目录: e:\Program\Auto-Central-Control\Auto-Central-Control\ACC\memory\todo
-2025-03-22 23:40:40,321 - ACC.memory.memory_manager - INFO - 清空操作目录完成
-2025-03-22 23:40:40,330 - ACC.memory.memory_manager - INFO - 清空操作解释目录完成
-2025-03-22 23:40:40,331 - ACC.agent.analysis - INFO - 初始化分析代理
-2025-03-22 23:40:40,331 - main - ERROR - 系统执行失败: name 'get_tools_config' is not defined

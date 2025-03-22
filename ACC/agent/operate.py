@@ -239,13 +239,16 @@ class OperateAgent(BaseAgent):
                 elif role == "user":
                     continue
     
-            # 构建提示词并添加到消息列表
+            # 在构建提示词并添加到消息列表后，保存用户消息到操作历史记录
             prompt = FIRST_STEP_PROMPT.format(
                 refinement_content=refinement_content,
                 planning_content=planning_content,
                 WORKSPACE_ABS_PATH=WORKSPACE_ABS_PATH,
             )
             self.add_message("user", prompt)
+    
+            # 添加：保存用户消息到操作历史记录
+            operation_history.append({"role": "user", "content": prompt})
     
             # 发送请求
             logger.info("🔄 正在向LLM发送操作请求...")
