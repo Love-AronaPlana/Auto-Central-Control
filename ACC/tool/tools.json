@@ -1,0 +1,126 @@
+[
+    {
+        "name": "execute_command",
+        "description": "执行系统命令",
+        "parameters": {
+            "command": {
+                "type": "bash",
+                "description": "要执行的命令"
+            }
+        }
+    },
+    {
+        "name": "write_file",
+        "description": "覆盖写入指定绝对路径的文本文件内容（警告：将覆盖文件的所有现有内容）",
+        "parameters": {
+            "file_path": {
+                "type": "string",
+                "description": "文件绝对路径"
+            },
+            "content": {
+                "type": "string",
+                "description": "要写入的文件内容（将覆盖原有内容）"
+            }
+        }
+    },
+    {
+        "name": "create_file",
+        "description": "创建新的文本文件（如果文件已存在，则根据overwrite参数决定是否覆盖）",
+        "parameters": {
+            "file_path": {
+                "type": "string",
+                "description": "文件绝对路径"
+            },
+            "content": {
+                "type": "string",
+                "description": "文件内容"
+            },
+            "overwrite": {
+                "type": "boolean",
+                "description": "如果文件已存在，是否覆盖",
+                "default": false
+            }
+        }
+    },
+    {
+        "name": "create_multiple_files",
+        "description": "创建多个文本文件（支持绝对路径操作）",
+        "parameters": {
+            "files": {
+                "type": "array",
+                "description": "文件列表，每个文件包含路径和内容",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "path": {
+                            "type": "string",
+                            "description": "文件绝对路径"
+                        },
+                        "content": {
+                            "type": "string",
+                            "description": "文件内容"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        "name": "read_file",
+        "description": "读取指定绝对路径的文本文件内容",
+        "parameters": {
+            "file_path": {
+                "type": "string",
+                "description": "文件绝对路径"
+            }
+        }
+    },
+    {
+        "name": "list_directory",
+        "description": "列出指定绝对路径的目录内容",
+        "parameters": {
+            "directory_path": {
+                "type": "string",
+                "description": "目录绝对路径"
+            }
+        }
+    },
+    {
+        "name": "delete_file",
+        "description": "删除指定绝对路径的文本文件",
+        "parameters": {
+            "file_path": {
+                "type": "string",
+                "description": "文件绝对路径"
+            }
+        }
+    },
+    {
+        "name": "delete_multiple_files",
+        "description": "删除多个文本文件（支持绝对路径操作）",
+        "parameters": {
+            "file_paths": {
+                "type": "array",
+                "description": "文件绝对路径列表",
+                "items": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    {
+        "name": "system_info",
+        "description": "获取系统信息，包括用户名、桌面路径等系统路径",
+        "parameters": {}
+    },
+    {
+        "name": "python_interpreter",
+        "description": "临时执行Python脚本并返回输出结果（脚本将在examples目录下创建并在执行后删除）",
+        "parameters": {
+            "code": {
+                "type": "string",
+                "description": "Python代码内容，请保留并加入空格等符号，同时保留全部的缩进，不保留空格运行将会报错"
+            }
+        }
+    }
+]

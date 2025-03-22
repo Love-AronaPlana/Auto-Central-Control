@@ -1,0 +1,10 @@
+{
+  "analysis": "用户需要删除指定目录下的所有文件。这是一个相对简单的任务，只需要使用list_directory列出所有文件，然后使用delete_multiple_files删除这些文件即可。",
+  "tasks": {
+    "delete_files_in_directory": "删除指定目录下的所有文件",
+    "description": "删除E:\\Program\\Auto-Central-Control\\Auto-Central-Control\\workspace目录下的所有文件。",
+    "complexity": "low",
+    "task_structure": "删除指定目录下的所有文件 TODO\n\n## 1. 列出目录中的所有文件\n- [ ] 1.1 使用list_directory工具列出E:\\Program\\Auto-Central-Control\\Auto-Central-Control\\workspace目录下的所有文件。\n\n## 2. 删除所有文件\n- [ ] 2.1 提取上一步获取的文件列表。\n- [ ] 2.2 使用delete_multiple_files工具删除提取的文件列表中的所有文件。\n"
+  },
+  "execution_plan": "首先，使用list_directory工具获取目标目录下的所有文件列表。然后，使用delete_multiple_files工具删除这些文件。如果目录为空，list_directory会返回一个空列表，delete_multiple_files会处理空列表的情况，不会报错。"
+}

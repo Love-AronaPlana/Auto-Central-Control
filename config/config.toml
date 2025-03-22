@@ -1,9 +1,13 @@
 # Global LLM configuration
 [llm]
+#model = "DeepSeek-V3"
+#base_url = "https://api.gptacg.top/v1"
+#api_key = "sk-IAqEbpuQ7CJASySEF1nVz8DDpFd7AtXptcF4drduHrqCSTwP"
 model = "gemini-2.0-flash"
-base_url = "https://gemini-api-gavinchen.deno.dev/v1"
-api_key = "AIzaSyCCi2NfG9OUR-wWHVgunqqhtBp2AOsn6IE"
-max_tokens = 4096
+#base_url = "https://gemini-api-gavinchen.deno.dev/v1"
+base_url = "https://gemini-api.gavinchen.top/v1"
+api_key = "AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM"
+max_tokens = 640000
 temperature = 0.3
 debug = true
 
@@ -21,3 +25,7 @@ debug = true
 model = "gemini-2.0-flash"
 base_url = "https://gemini-api-gavinchen.deno.dev/v1"
 api_key = "AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM"
+
+# 添加默认可操作文件路径设置
+[workspace]
+default_path = "workspace"

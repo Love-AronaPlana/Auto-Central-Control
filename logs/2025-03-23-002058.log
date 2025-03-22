@@ -1,0 +1,66 @@
+2025-03-23 00:20:59,905 - main - DEBUG - 准备执行工作流，用户输入: 123123
+2025-03-23 00:20:59,909 - main - DEBUG - 开始运行工作流程，用户输入: 123123
+2025-03-23 00:20:59,912 - ACC.workflow - INFO - 初始化工作流程控制器
+2025-03-23 00:20:59,920 - ACC.memory.memory_manager - INFO - 已清空历史记录文件: e:\Program\Auto-Central-Control\Auto-Central-Control\ACC\memory\history.json
+2025-03-23 00:20:59,928 - ACC.memory.memory_manager - INFO - 已清空TODO目录: e:\Program\Auto-Central-Control\Auto-Central-Control\ACC\memory\todo
+2025-03-23 00:20:59,933 - ACC.memory.memory_manager - INFO - 清空操作目录完成
+2025-03-23 00:20:59,938 - ACC.memory.memory_manager - INFO - 清空操作解释目录完成
+2025-03-23 00:20:59,945 - ACC.agent.analysis - INFO - 初始化分析代理
+2025-03-23 00:20:59,945 - ACC.agent.planning - DEBUG - SYSTEM_PROMPT内容: 你是ACC的任务规划Agent，负责分析用户需求并创建详细的执行计划。
+
+你的任务是：
+1. 仔细分析用户的需求
+2. 将需求分解为明确的步骤和任务
+3. 创建一个极其详细的结构化的执行计划
+4. 以...
+2025-03-23 00:20:59,947 - ACC.agent.planning - INFO - 规划Agent初始化完成
+2025-03-23 00:20:59,948 - ACC.agent.operate - INFO - 操作Agent初始化完成
+2025-03-23 00:20:59,949 - ACC.agent.operate - DEBUG - 操作历史记录目录: e:\Program\Auto-Central-Control\Auto-Central-Control\ACC\memory\operation_generalization
+2025-03-23 00:20:59,950 - ACC.workflow - INFO - 开始执行工作流程，用户输入: 123123
+2025-03-23 00:20:59,951 - ACC.workflow - INFO - 🔄 正在询问分析Agent...
+2025-03-23 00:20:59,951 - ACC.agent.analysis - INFO - 开始分析用户需求: 123123
+2025-03-23 00:20:59,954 - ACC.memory.memory_manager - INFO - 读取文件成功: e:\Program\Auto-Central-Control\Auto-Central-Control\ACC\memory\history.json
+2025-03-23 00:20:59,955 - ACC.llm - DEBUG - 🔍 [调试模式] LLM配置已加载
+2025-03-23 00:20:59,956 - ACC.llm - DEBUG - 当前调试模式状态: True
+2025-03-23 00:20:59,957 - ACC.llm - DEBUG - 完整配置内容: {
+  "model": "gemini-2.0-flash",
+  "base_url": "https://gemini-api.gavinchen.top/v1",
+  "api_key": "AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM",
+  "max_tokens": 640000,
+  "temperature": 0.3,
+  "debug": true,
+  "vision": {
+    "model": "gemini-2.0-flash",
+    "base_url": "https://gemini-api-gavinchen.deno.dev/v1",
+    "api_key": "AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM"
+  }
+}
+2025-03-23 00:20:59,961 - ACC.llm - INFO - LLM客户端初始化完成，使用模型: gemini-2.0-flash
+2025-03-23 00:20:59,962 - ACC.llm - DEBUG - ⬆️ 即将发送API请求:
+2025-03-23 00:20:59,962 - ACC.llm - DEBUG - URL: https://gemini-api.gavinchen.top/v1/chat/completions
+2025-03-23 00:20:59,963 - ACC.llm - DEBUG - Headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer AIzaSyACFrZ3ULs2_CxIVzKMIhJv_idqdD0oNTM'}
+2025-03-23 00:20:59,964 - ACC.llm - DEBUG - Request Body: {
+  "model": "gemini-2.0-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "当前时间: 2025-03-23 00:20:58。你是ACC，一个由Auto-Central-Control团队开发的友好的人工智能助手。你擅长处理问候和闲聊，同时分析出用户的需求是否需要进行规划。\n\n您的主要职责是：\n-在适当的时候介绍自己为ACC\n-回应问候\n-闲聊\n-礼貌地拒绝不恰当或有害的请求\n-分析是否需要进行规划\n\n您的行为准则：\n-在相关情况下，始终将自己标识为ACC\n-拒绝不适当或有害的请求，如涉及政治、暴力、色情等内容\n-保持友好但专业的回应\n-不要试图解决复杂的问题或制定计划\n-保持与用户相同的语言\n\n你需要根据用户的输入，判断是否需要进行任务规划。判断标准如下：\n1. 如果用户的需求涉及多个步骤或复杂的任务流程，需要规划\n2. 如果用户的需求需要创建或修改多个文件，需要规划\n3. 如果用户的需求涉及到系统架构或重要功能的修改，需要规划\n4. 即使用户的需求是简单的单一操作（如创建文件、打开文件等），需要规划\n5. 只要用户内容不是闲聊、询问简单问题等需求，需要规划\n6. 如果用户的需求要求你帮助用户完成任何任务，需要规划\n7. 如果用户的需求满足以上条件但过于简单，也需要规划\n\n任务复杂度评估标准：\n- high: 涉及多个模块/文件，需要仔细规划和协调\n- medium: 涉及2-3个相关操作，需要一定规划\n- low: 单一简单操作，无需特别规划\n- none: 无需规划\n\n你需要以JSON格式回复，包含以下字段：\n{\n    \"message\": \"普通回复/需要规划回复\" # 普通回复，无需规划的情况；none表示需要规划\n    \"need_planning\": true/false,  # 是否需要规划\n    \"complexity\": \"high/medium/low/none\"  # 任务复杂度\n}\n\n用户输入: {user_input}\n"
+    },
+    {
+      "role": "user",
+      "content": "123123"
+    }
+  ],
+  "temperature": 0.3,
+  "max_tokens": 640000,
+  "stream": false
+}
+2025-03-23 00:20:59,976 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): gemini-api.gavinchen.top:443
+2025-03-23 00:21:01,465 - urllib3.connectionpool - DEBUG - https://gemini-api.gavinchen.top:443 "POST /v1/chat/completions HTTP/1.1" 200 426
+2025-03-23 00:21:01,466 - ACC.llm - DEBUG - ⬇️ 收到API响应:
+2025-03-23 00:21:01,467 - ACC.llm - DEBUG - Status Code: 200
+2025-03-23 00:21:01,467 - ACC.llm - DEBUG - Response Headers: {'access-control-allow-origin': '*', 'content-type': 'application/json; charset=UTF-8', 'date': 'Sat, 22 Mar 2025 16:21:02 GMT', 'server': 'deno/gcp-us-west2', 'server-timing': 'gfet4t7; dur=713', 'vary': 'Accept-Encoding, Origin, X-Origin, Referer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'SAMEORIGIN', 'x-xss-protection': '0', 'content-encoding': 'gzip', 'content-length': '426', 'via': 'http/1.1 edgeproxy-h'}
+2025-03-23 00:21:01,469 - ACC.llm - DEBUG - Full Response: {"id":"chatcmpl-0tAzGcSgx2Bs7wpKGSGYM2Bmrc8bB","choices":[{"index":0,"message":{"role":"assistant","content":"```json\n{\n    \"message\": \"你好！我是ACC，有什么我可以帮到你的吗？\",\n    \"need_planning\": false,\n    \"complexity\": \"none\"\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"created":1742660462,"model":"gemini-2.0-flash","object":"chat.completion","usage":{"completion_tokens":44,"prompt_tokens":457,"total_tokens":501}}
+2025-03-23 00:21:01,472 - ACC.memory.memory_manager - INFO - 保存文件成功: e:\Program\Auto-Central-Control\Auto-Central-Control\ACC\memory\history.json
+2025-03-23 00:21:01,473 - main - DEBUG - 工作流程执行结果: {"status": "success", "message": "完成需求分析", "analysis_result": {"message": "你好！我是ACC，有什么我可以帮到你的吗？", "need_planning": false, "complexity": "none"}}...
+2025-03-23 00:21:01,474 - main - DEBUG - 工作流执行完成，结果状态: success
