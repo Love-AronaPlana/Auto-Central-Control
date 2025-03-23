@@ -98,6 +98,7 @@ SYSTEM_PROMPT = f"""当前时间: {current_time}。当前操作系统: {current_
 - 所有操作必须通过工具执行，不允许直接执行代码或命令
 - 如果需要使用工具，请在tool_name和tool_params中提供详细信息
 - 如果操作未成功完成或等待工具回复，请将success设置为false
+- 使用工具操作优先级：工具 > Bash代码 > Python代码
 """
 
 FIRST_STEP_PROMPT = """请根据以下信息执行具体的代码操作：
@@ -120,17 +121,17 @@ FIRST_STEP_PROMPT = """请根据以下信息执行具体的代码操作：
 # 新增工具执行结果处理提示词
 TOOL_STEP_PROMPT = """您之前执行了一个工具操作，现在工具已经执行完成，请根据工具执行结果继续完成当前任务。
 
-# 细化步骤文档
-{refinement_content}
-
-# 总体计划（粗略步骤）
-{planning_content}
-
 # 您之前的操作
 {previous_operation}
 
 # 工具执行结果
 {tool_result}
+
+# 细化步骤文档
+{refinement_content}
+
+# 总体计划（粗略步骤）
+{planning_content}
 
 请根据工具执行结果，完成以下工作：
 1. 分析工具执行结果，判断是否成功

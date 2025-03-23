@@ -47,6 +47,49 @@ class OperateAgent(BaseAgent):
             logger.error(f"初始化异常堆栈: {traceback.format_exc()}")
             raise
 
+    # 重写parse_json_response方法，增强对特殊字符的处理能力
+    def parse_json_response(self, response: Dict[str, Any]) -> Any:
+        """解析LLM响应中的JSON内容
+        
+        Args:
+            response: LLM响应
+            
+        Returns:
+            解析后的JSON对象
+        """
+        try:
+            content = response.get("content", "")
+            
+            # 提取JSON内容
+            json_content = content
+            
+            # 如果内容被包裹在```json和```之间，提取出来
+            if "```json" in content and "```" in content:
+                pattern = r"```json\s*([\s\S]*?)\s*```"
+                match = re.search(pattern, content)
+                if match:
+                    json_content = match.group(1)
+            
+            # 处理特殊的转义字符问题
+            # 1. 先替换掉正则表达式中常见的问题模式
+            # 处理 href=[\"\\'] 这种模式
+            json_content = re.sub(r'href=\[(\\+)"(\\+)\'\]', r'href=[\\\\"\\\\\'"]', json_content)
+            # 处理 [\"\\'] 这种模式
+            json_content = re.sub(r'\[(\\+)"(\\+)\'\]', r'[\\\\"\\\\\'"]', json_content)
+            # 处理其他可能的转义问题
+            json_content = json_content.replace(r'\\\"', r'\\"').replace(r'\\\'', r'\\\'')
+            
+            # 2. 尝试解析JSON
+            return json.loads(json_content)
+        except json.JSONDecodeError as e:
+            logger.error(f"解析JSON失败: {e}")
+            logger.error(f"原始内容: {content}")
+            # 如果解析失败，返回原始内容
+            return content
+        except Exception as e:
+            logger.error(f"解析响应时出错: {e}")
+            return content
+
     def _ensure_operation_history_dir(self):
         """确保操作历史记录目录存在"""
         self.operation_history_dir = os.path.join(

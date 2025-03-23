@@ -24,59 +24,6 @@ EXAMPLES_DIR = os.path.join(
 )
 
 
-def preprocess_python_code(code: str) -> str:
-    """预处理Python代码，尝试修复常见的缩进问题
-    
-    Args:
-        code: 原始Python代码
-        
-    Returns:
-        处理后的Python代码
-    """
-    # 处理Windows路径中的反斜杠，将其替换为原始字符串标记
-    # 查找类似 r'path\to\file' 或 'path\\to\\file' 的模式
-    code = re.sub(r'(?<![\\\'"])\\(?![\\\'"])', r'\\\\', code)
-    
-    lines = code.split('\n')
-    processed_lines = []
-    current_indent = 0
-    indent_size = 4  # 默认缩进为4个空格
-    
-    # 跟踪代码块状态
-    in_block = False
-    block_indent = 0
-    
-    for i, line in enumerate(lines):
-        stripped_line = line.strip()
-        
-        # 跳过空行和注释行
-        if not stripped_line or stripped_line.startswith('#'):
-            processed_lines.append(line)
-            continue
-            
-        # 检查是否需要增加缩进（上一行以冒号结尾）
-        if i > 0 and lines[i-1].strip().endswith(':'):
-            current_indent += indent_size
-            in_block = True
-            block_indent = current_indent
-            
-        # 检查当前行是否应该减少缩进
-        if stripped_line.startswith(('else:', 'elif ', 'except:', 'finally:', 'except ', 'else ', 'elif:')):
-            # 如果在代码块内，回到代码块的缩进级别
-            if in_block:
-                current_indent = max(0, block_indent - indent_size)
-            else:
-                current_indent = max(0, current_indent - indent_size)
-            
-        # 应用缩进
-        if not line.startswith(' ' * current_indent) and stripped_line:
-            processed_lines.append(' ' * current_indent + stripped_line)
-        else:
-            processed_lines.append(line)
-            
-    return '\n'.join(processed_lines)
-
-
 def add_encoding_handling(code: str) -> str:
     """添加编码处理代码
     
@@ -145,11 +92,8 @@ class PythonInterpreterTool(BaseTool):
         Returns:
             执行结果字典，包含输出内容或错误信息
         """
-        # 预处理代码，尝试修复缩进问题
-        processed_code = preprocess_python_code(code)
-        
         # 添加编码处理
-        processed_code = add_encoding_handling(processed_code)
+        processed_code = add_encoding_handling(code)
         
         # 生成唯一的临时文件名
         temp_filename = f"temp_script_{uuid.uuid4().hex}.py"

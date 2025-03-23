@@ -98,7 +98,7 @@ class RefinementAgent(BaseAgent):
     def parse_json_response(self, response: Dict) -> Dict:
         """专用JSON解析方法"""
         content = response.get("content", "").replace("\\n", "\n")
-
+    
         try:
             # 去除可能的代码块标记
             content = content.split("```json")[-1].split("```")[0].strip()
@@ -115,6 +115,10 @@ class RefinementAgent(BaseAgent):
             
             # 4. 处理其他常见的JSON转义问题
             content = content.replace('\\"', '"').replace('\\\\n', '\\n')
+            
+            # 5. 处理控制字符 - 新增
+            # 移除或转义JSON中不允许的控制字符 (ASCII 0-31)
+            content = re.sub(r'[\x00-\x1F]', '', content)
             
             return json.loads(content)
         except (json.JSONDecodeError, AttributeError) as e:
@@ -134,6 +138,14 @@ class RefinementAgent(BaseAgent):
                         "task_description": task_description_match.group(1) if task_description_match else "任务描述解析失败"
                     }
             except Exception:
+                pass
+                
+            # 尝试使用更强大的JSON解析方法 - 新增
+            try:
+                import json5
+                return json5.loads(content)
+            except (ImportError, Exception):
+                # 如果json5模块不可用或解析仍然失败
                 pass
                 
             return {"error": f"JSON解析失败: {str(e)}"}
