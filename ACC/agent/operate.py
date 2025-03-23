@@ -616,23 +616,41 @@ class OperateAgent(BaseAgent):
                     # 解析历史记录内容
                     history_data = json.loads(content)
                     
-                    # 提取助手消息内容
-                    assistant_messages = []
+                    # 提取所有相关消息内容，包括助手消息和工具结果
+                    processed_history = []
                     for msg in history_data:
-                        if isinstance(msg, dict) and msg.get("role") == "assistant":
-                            # 尝试从JSON字符串中提取内容
-                            try:
-                                content = msg.get("content", "")
-                                # 移除可能的Markdown代码块标记
-                                content = content.replace("```json", "").replace("```", "").strip()
-                                # 解析JSON内容
-                                json_content = json.loads(content)
-                                assistant_messages.append(json_content)
-                            except json.JSONDecodeError:
-                                # 如果不是有效的JSON，则保留原始内容
-                                assistant_messages.append({"raw_content": content})
+                        if isinstance(msg, dict):
+                            role = msg.get("role", "")
+                            content = msg.get("content", "")
+                            
+                            # 处理助手消息
+                            if role == "assistant":
+                                try:
+                                    # 移除可能的Markdown代码块标记
+                                    cleaned_content = content.replace("```json", "").replace("```", "").strip()
+                                    # 解析JSON内容
+                                    json_content = json.loads(cleaned_content)
+                                    processed_history.append(json_content)
+                                except json.JSONDecodeError:
+                                    # 如果不是有效的JSON，则保留原始内容
+                                    processed_history.append({"raw_content": content})
+                            
+                            # 处理工具结果消息
+                            elif role == "tool_result":
+                                try:
+                                    # 解析工具结果
+                                    tool_result = json.loads(content)
+                                    processed_history.append({
+                                        "type": "tool_result",
+                                        "result": tool_result
+                                    })
+                                except json.JSONDecodeError:
+                                    processed_history.append({
+                                        "type": "tool_result",
+                                        "raw_content": content
+                                    })
                 
-                history_results[history_id] = assistant_messages
+                history_results[history_id] = processed_history
             
             logger.info(f"成功获取历史记录: {list(history_results.keys())}")
             return history_results

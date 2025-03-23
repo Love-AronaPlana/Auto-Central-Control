@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 
+
 # 读取工具配置
 def get_tools_config():
     try:
@@ -18,6 +19,7 @@ def get_tools_config():
     except Exception as e:
         print(f"读取工具配置失败: {e}")
         return []
+
 
 # 获取工具配置
 tools_config = get_tools_config()
@@ -63,6 +65,7 @@ SYSTEM_PROMPT = f"""你是ACC的任务规划Agent，负责分析用户需求并�
 只能含有一个task_structure。
 请确保你的分析全面、任务分解合理，并考虑任务之间的依赖关系。
 只能包含有一级任务和二级任务，且二级任务必须在一级任务下，不可创建三级任务。
+信息优先级：数据源API的权威数据 > 网络搜索 > 模型内部知识
 """
 
 FIRST_STEP_PROMPT = """请分析以下用户需求，并创建一个执行计划：

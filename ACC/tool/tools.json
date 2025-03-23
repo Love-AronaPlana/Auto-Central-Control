@@ -122,5 +122,23 @@
                 "description": "Python代码内容，请保留并加入空格等符号，同时保留全部的缩进，不保留空格运行将会报错"
             }
         }
+    },
+    {
+        "name": "image_recognition",
+        "description": "识别图片内容并提供详细描述（支持本地图片路径或Base64编码的图片数据）",
+        "parameters": {
+            "image_path": {
+                "type": "string",
+                "description": "图片的本地绝对路径（与image_base64二选一）"
+            },
+            "image_base64": {
+                "type": "string",
+                "description": "Base64编码的图片数据（与image_path二选一）"
+            },
+            "prompt_override": {
+                "type": "string",
+                "description": "可选，覆盖默认的图片分析提示词"
+            }
+        }
     }
 ]

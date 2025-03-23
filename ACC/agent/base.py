@@ -66,9 +66,9 @@ class BaseAgent(ABC):
         if role in valid_roles:
             return role
         else:
-            # 对于不支持的角色，转换为system角色
-            logger.warning(f"[{self.name}] 不支持的角色类型 '{role}'，已转换为 'system'")
-            return "system"
+            # 对于不支持的角色，转换为user角色
+            logger.warning(f"[{self.name}] 不支持的角色类型 '{role}'，已转换为 'user'")
+            return "user"
     
     def normalize_messages(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """规范化消息列表，确保所有消息角色都是有效的

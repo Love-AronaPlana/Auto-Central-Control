@@ -15,6 +15,7 @@ from .list_directory import ListDirectoryTool
 from .delete_files import DeleteFileTool, DeleteMultipleFilesTool
 from .system_info import SystemInfoTool
 from .python_interpreter import PythonInterpreterTool
+from .image_recognition import ImageRecognitionTool  # 导入新的图片识别工具
 
 # 导出所有工具类
 __all__ = [
@@ -28,6 +29,7 @@ __all__ = [
     "DeleteMultipleFilesTool",
     "SystemInfoTool",
     "PythonInterpreterTool",
+    "ImageRecognitionTool",  # 添加新的图片识别工具
 ]
 
 # 注册所有工具
@@ -40,6 +42,7 @@ ToolRegistry.register(ListDirectoryTool())
 ToolRegistry.register(DeleteFileTool())
 ToolRegistry.register(DeleteMultipleFilesTool())
 ToolRegistry.register(SystemInfoTool())
-ToolRegistry.register(PythonInterpreterTool())  # 注册Python解释器工具
+ToolRegistry.register(PythonInterpreterTool())
+ToolRegistry.register(ImageRecognitionTool())  # 注册图片识别工具
 
 __all__ = ["BaseTool", "ToolRegistry", "execute_tool", "register_all_tools"]
