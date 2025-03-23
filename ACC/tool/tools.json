@@ -137,7 +137,7 @@
             },
             "prompt_override": {
                 "type": "string",
-                "description": "可选，覆盖默认的图片分析提示词"
+                "description": "可选，覆盖默认的分析图片的提示词，可以自定义更专注于分析图片的某一处内容"
             }
         }
     }
