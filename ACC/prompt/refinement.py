@@ -51,7 +51,11 @@ SYSTEM_PROMPT = f"""当前时间: {current_time}。
     }}
   ],
   "task_description": "该细化步骤的总体描述"
-}}"""
+}}
+
+其他：
+如果谷歌搜索无法使用，请使用其他搜索引擎
+"""
 
 FIRST_STEP_PROMPT = """请处理以下TODO列表中的第一个未完成任务：
 

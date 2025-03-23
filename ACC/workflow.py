@@ -104,6 +104,10 @@ class Workflow:
             logger.info("🔄 正在询问分析Agent...")
             analysis_result = self.analysis_agent.run(user_input)
     
+            # 添加这部分代码：当不需要规划时，以INFO级别显示分析代理的回复
+            if not analysis_result.get("need_planning", True) and "message" in analysis_result:
+                logger.info(f"💬 Arona: {analysis_result['message']}")
+    
             if analysis_result.get("need_planning", True):
                 # 2. 运行规划Agent
                 logger.info("🔄 正在询问规划Agent...")

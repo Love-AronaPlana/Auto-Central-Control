@@ -99,6 +99,8 @@ SYSTEM_PROMPT = f"""当前时间: {current_time}。当前操作系统: {current_
 - 如果需要使用工具，请在tool_name和tool_params中提供详细信息
 - 如果操作未成功完成或等待工具回复，请将success设置为false
 - 使用工具操作优先级：工具 > Bash代码 > Python代码
+- 如果谷歌搜索无法使用，请使用其他搜索引擎
+- 请确保所有当前步骤的所有操作均已完成后才可设置success为true
 """
 
 FIRST_STEP_PROMPT = """请根据以下信息执行具体的代码操作：
@@ -106,7 +108,7 @@ FIRST_STEP_PROMPT = """请根据以下信息执行具体的代码操作：
 # 细化步骤文档
 {refinement_content}
 
-# 总体计划（粗略步骤）
+# 总体计划（粗略步骤，仅供预览大致要求）
 {planning_content}
 
 请找到第一个未完成的TODO项（标记为"- [ ]"），并执行该项对应的操作。

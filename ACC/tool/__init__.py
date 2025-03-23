@@ -17,6 +17,8 @@ from .system_info import SystemInfoTool
 from .python_interpreter import PythonInterpreterTool
 from .image_recognition import ImageRecognitionTool
 from .search_bing import SearchBingTool
+from .search_baidu import SearchBaiduTool
+from .search_google import SearchGoogleTool  # 新增导入谷歌搜索工具
 
 # 导出所有工具类
 __all__ = [
@@ -32,6 +34,8 @@ __all__ = [
     "PythonInterpreterTool",
     "ImageRecognitionTool",
     "SearchBingTool",
+    "SearchBaiduTool",
+    "SearchGoogleTool",
 ]
 
 # 注册所有工具
@@ -47,5 +51,7 @@ ToolRegistry.register(SystemInfoTool())
 ToolRegistry.register(PythonInterpreterTool())
 ToolRegistry.register(ImageRecognitionTool())
 ToolRegistry.register(SearchBingTool())
+ToolRegistry.register(SearchBaiduTool())
+ToolRegistry.register(SearchGoogleTool())
 
 __all__ = ["BaseTool", "ToolRegistry", "execute_tool", "register_all_tools"]

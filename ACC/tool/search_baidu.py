@@ -1,7 +1,7 @@
-"""Bing搜索工具
+"""百度搜索工具
 
-该模块提供了使用Selenium在Bing搜索引擎上进行搜索的工具。
-工具会打开浏览器，访问Bing搜索页面，输入搜索内容，并返回搜索结果。
+该模块提供了使用Selenium在百度搜索引擎上进行搜索的工具。
+工具会打开浏览器，访问百度搜索页面，输入搜索内容，并返回搜索结果。
 """
 
 import logging
@@ -22,14 +22,14 @@ from ACC.tool.base import BaseTool, ToolRegistry
 
 logger = logging.getLogger(__name__)
 
-class SearchBingTool(BaseTool):
-    """Bing搜索工具"""
+class SearchBaiduTool(BaseTool):
+    """百度搜索工具"""
 
     def __init__(self):
-        """初始化Bing搜索工具"""
+        """初始化百度搜索工具"""
         super().__init__(
-            name="search_bing",
-            description="在Bing搜索引擎上搜索指定内容并返回搜索结果，包含网页标题、链接和内容摘要"
+            name="search_baidu",
+            description="在百度搜索引擎上搜索指定内容并返回搜索结果，包含网页标题、链接和内容摘要（最多600字符），可以使用其它工具对链接进行进一步的访问以获取内容"
         )
 
     def _get_chromedriver_path(self) -> str:
@@ -119,7 +119,7 @@ class SearchBingTool(BaseTool):
             return "无法获取网页内容"
 
     def execute(self, query: str, max_results: int = 5, timeout: int = 30, fetch_content: bool = True) -> Dict[str, Any]:
-        """执行Bing搜索操作
+        """执行百度搜索操作
 
         Args:
             query: 搜索查询内容
@@ -134,7 +134,6 @@ class SearchBingTool(BaseTool):
         try:
             # 设置Chrome选项
             chrome_options = Options()
-            # chrome_options.add_argument("--start-maximized")  # 最大化窗口
             chrome_options.add_argument("--disable-extensions")  # 禁用扩展
             # chrome_options.add_argument("--disable-gpu")  # 禁用GPU加速
             chrome_options.add_argument("--no-sandbox")  # 禁用沙盒模式
@@ -151,9 +150,9 @@ class SearchBingTool(BaseTool):
             # 设置隐式等待时间
             driver.implicitly_wait(10)
             
-            # 访问Bing搜索页面
-            logger.info(f"正在访问Bing搜索页面，搜索内容: {query}")
-            driver.get("https://www.bing.com")
+            # 访问百度搜索页面
+            logger.info(f"正在访问百度搜索页面，搜索内容: {query}")
+            driver.get("https://www.baidu.com")
             
             # 等待页面完全加载后额外等待2秒
             logger.info("等待页面完全加载...")
@@ -161,7 +160,7 @@ class SearchBingTool(BaseTool):
             
             # 等待搜索框加载
             search_box = WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.ID, "sb_form_q"))
+                EC.presence_of_element_located((By.ID, "kw"))
             )
             
             # 清空搜索框并输入搜索内容
@@ -173,16 +172,20 @@ class SearchBingTool(BaseTool):
             
             # 等待搜索结果加载
             WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.ID, "b_results"))
+                EC.presence_of_element_located((By.ID, "content_left"))
             )
             
-            # 给页面一些时间完全加载 - 增加等待时间到2秒
+            # 给页面一些时间完全加载
             logger.info("搜索结果已加载，等待2秒以确保页面完全渲染...")
             time.sleep(2)
             
             # 获取搜索结果
             search_results = []
-            result_elements = driver.find_elements(By.CSS_SELECTOR, "#b_results .b_algo")
+            result_elements = driver.find_elements(By.CSS_SELECTOR, "#content_left .result")
+            
+            # 如果没有找到结果，尝试其他选择器
+            if not result_elements:
+                result_elements = driver.find_elements(By.CSS_SELECTOR, "#content_left .c-container")
             
             # 限制结果数量
             for i, element in enumerate(result_elements):
@@ -190,15 +193,21 @@ class SearchBingTool(BaseTool):
                     break
                 
                 try:
-                    title_element = element.find_element(By.CSS_SELECTOR, "h2 a")
+                    # 尝试获取标题和链接
+                    title_element = element.find_element(By.CSS_SELECTOR, "h3 a")
                     title = title_element.text
+                    
+                    # 获取链接（百度使用重定向链接）
                     url = title_element.get_attribute("href")
                     
                     # 尝试获取描述
                     try:
-                        description = element.find_element(By.CSS_SELECTOR, ".b_caption p").text
+                        description = element.find_element(By.CSS_SELECTOR, ".c-abstract").text
                     except:
-                        description = "无描述"
+                        try:
+                            description = element.find_element(By.CSS_SELECTOR, ".content-right_8Zs40").text
+                        except:
+                            description = "无描述"
                     
                     # 使用浏览器获取网页内容
                     page_content = "未获取网页内容"
@@ -219,11 +228,11 @@ class SearchBingTool(BaseTool):
             page_title = driver.title
             page_url = driver.current_url
             
-            logger.info(f"成功获取Bing搜索结果，共{len(search_results)}条")
+            logger.info(f"成功获取百度搜索结果，共{len(search_results)}条")
             
             return {
                 "status": "success",
-                "message": f"成功获取Bing搜索结果，共{len(search_results)}条",
+                "message": f"成功获取百度搜索结果，共{len(search_results)}条",
                 "query": query,
                 "page_title": page_title,
                 "page_url": page_url,
@@ -245,12 +254,12 @@ class SearchBingTool(BaseTool):
                 "query": query
             }
         except Exception as e:
-            logger.error(f"执行Bing搜索时发生错误: {e}")
+            logger.error(f"执行百度搜索时发生错误: {e}")
             import traceback
             logger.debug(f"异常堆栈: {traceback.format_exc()}")
             return {
                 "status": "error",
-                "message": f"执行Bing搜索失败: {str(e)}",
+                "message": f"执行百度搜索失败: {str(e)}",
                 "query": query
             }
         finally:
@@ -264,4 +273,4 @@ class SearchBingTool(BaseTool):
 
 
 # 注册工具
-ToolRegistry.register(SearchBingTool())
+ToolRegistry.register(SearchBaiduTool())

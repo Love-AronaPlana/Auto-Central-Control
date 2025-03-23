@@ -165,5 +165,55 @@
                 "default": true
             }
         }
+    },
+    {
+        "name": "search_baidu",
+        "description": "在百度搜索引擎上搜索指定内容并返回搜索结果，包含网页标题、链接和内容摘要（最多600字符），可以使用其它工具对链接进行进一步的访问以获取内容",
+        "parameters": {
+            "query": {
+                "type": "string",
+                "description": "搜索查询内容"
+            },
+            "max_results": {
+                "type": "integer",
+                "description": "返回的最大结果数量",
+                "default": 5
+            },
+            "timeout": {
+                "type": "integer",
+                "description": "等待页面加载的超时时间（秒）",
+                "default": 30
+            },
+            "fetch_content": {
+                "type": "boolean",
+                "description": "是否获取网页内容摘要（最多600字符）",
+                "default": true
+            }
+        }
+    },
+    {
+        "name": "search_google",
+        "description": "在谷歌搜索引擎上搜索指定内容并返回搜索结果，包含网页标题、链接和内容摘要（最多600字符），可以使用其它工具对链接进行进一步的访问以获取内容",
+        "parameters": {
+            "query": {
+                "type": "string",
+                "description": "搜索查询内容"
+            },
+            "max_results": {
+                "type": "integer",
+                "description": "返回的最大结果数量",
+                "default": 5
+            },
+            "timeout": {
+                "type": "integer",
+                "description": "等待页面加载的超时时间（秒）",
+                "default": 30
+            },
+            "fetch_content": {
+                "type": "boolean",
+                "description": "是否获取网页内容摘要（最多600字符）",
+                "default": true
+            }
+        }
     }
 ]

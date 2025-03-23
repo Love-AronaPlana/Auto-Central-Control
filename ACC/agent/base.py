@@ -122,6 +122,8 @@ class BaseAgent(ABC):
         max_retries = 5
         retry_delay = 30  # 秒
         request_timeout = 180  # 3分钟超时时间
+        anti_stuck_retries = 3  # 防卡重试次数
+        anti_stuck_delay = 15  # 防卡重试等待时间（秒）
         
         for attempt in range(1, max_retries + 1):
             try:
@@ -135,15 +137,43 @@ class BaseAgent(ABC):
                     try:
                         return future.result(timeout=request_timeout)
                     except concurrent.futures.TimeoutError:
-                        # 请求超时，取消任务并抛出异常
+                        # 请求超时，实施防卡重试策略
                         logger.warning(f"[{self.name}] 请求超时 (超过 {request_timeout} 秒)")
+                        
                         # 尝试取消正在执行的任务
                         for t in threading.enumerate():
                             if t.name.startswith('ThreadPoolExecutor'):
                                 # 这里无法直接终止线程，但会在下一次循环中重新创建线程池
                                 pass
-                        raise TimeoutError(f"请求超时 (超过 {request_timeout} 秒)")
                         
+                        # 防卡重试逻辑
+                        for anti_stuck_attempt in range(1, anti_stuck_retries + 1):
+                            logger.info(f"[{self.name}] 防卡重试 ({anti_stuck_attempt}/{anti_stuck_retries})，等待 {anti_stuck_delay} 秒后重试...")
+                            time.sleep(anti_stuck_delay)
+                            
+                            # 创建新的线程池重试
+                            with concurrent.futures.ThreadPoolExecutor() as retry_executor:
+                                retry_future = retry_executor.submit(func, *args, **kwargs)
+                                try:
+                                    return retry_future.result(timeout=request_timeout)
+                                except concurrent.futures.TimeoutError:
+                                    logger.warning(f"[{self.name}] 防卡重试 {anti_stuck_attempt} 仍然超时")
+                                    continue  # 继续下一次防卡重试
+                                except Exception as e:
+                                    logger.warning(f"[{self.name}] 防卡重试 {anti_stuck_attempt} 出错: {str(e)}")
+                                    continue  # 继续下一次防卡重试
+                        
+                        # 如果所有防卡重试都失败，抛出超时异常
+                        raise TimeoutError(f"请求超时 (超过 {request_timeout} 秒)，且 {anti_stuck_retries} 次防卡重试均失败")
+                        
+            except TimeoutError as e:
+                logger.error(f"[{self.name}] 请求超时且防卡重试失败: {str(e)}")
+                if attempt < max_retries:
+                    logger.info(f"[{self.name}] 等待 {retry_delay} 秒后进行常规重试...")
+                    time.sleep(retry_delay)
+                else:
+                    logger.error(f"[{self.name}] 重试 {max_retries} 次后仍然失败")
+                    raise
             except Exception as e:
                 logger.warning(f"[{self.name}] 操作失败 (尝试 {attempt}/{max_retries}): {str(e)}")
                 

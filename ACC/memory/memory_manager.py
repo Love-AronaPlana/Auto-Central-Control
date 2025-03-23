@@ -48,7 +48,7 @@ class MemoryManager:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
 
-            logger.info(f"保存文件成功: {file_path}")
+            logger.debug(f"保存文件成功: {file_path}")
             return file_path
         except Exception as e:
             logger.error(f"保存文件失败: {e}")
