@@ -27,7 +27,7 @@ def get_tools_config():
 
 # 获取工具配置
 tools_config = get_tools_config()
-tools_description = json.dumps(tools_config, ensure_ascii=False, indent=2)
+tools_description = "\n".join([f"- {tool['name']}: {tool['description']}" for tool in tools_config])
 
 SYSTEM_PROMPT = f"""当前时间: {current_time}。
 你是ACC的任务规划Agent，负责分析用户需求并创建详细的执行计划。

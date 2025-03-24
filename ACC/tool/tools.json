@@ -1,46 +1,98 @@
 [
     {
         "name": "execute_command",
-        "description": "执行系统命令",
+        "description": "在指定绝对路径目录执行命令并返回结果",
         "parameters": {
             "command": {
-                "type": "bash",
-                "description": "要执行的命令"
+                "type": "string",
+                "description": "要执行的命令（Bash或CMD）"
+            },
+            "working_dir": {
+                "type": "string",
+                "description": "执行目录的绝对路径",
+                "default": "当前工作目录"
+            },
+            "timeout": {
+                "type": "integer",
+                "description": "命令执行超时时间（秒）",
+                "default": 30
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功执行命令",
+                "response": {
+                    "status": "success",
+                    "message": "命令执行成功",
+                    "exit_code": 0,
+                    "stdout": "Hello World",
+                    "stderr": "",
+                    "command": "echo Hello World",
+                    "working_dir": "E:\\workspace"
+                }
+            }
+        ]
     },
     {
         "name": "write_file",
-        "description": "覆盖写入指定绝对路径的文本文件内容（警告：将覆盖文件的所有现有内容）",
+        "description": "覆盖写入指定路径的文本文件内容（跨平台支持，自动处理路径差异）",
         "parameters": {
             "file_path": {
                 "type": "string",
-                "description": "文件绝对路径"
+                "description": "文件路径（支持绝对路径和用户目录缩写如~/documents）"
             },
             "content": {
                 "type": "string",
-                "description": "要写入的文件内容（将覆盖原有内容）"
+                "description": "要写入的文本内容（UTF-8编码）"
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功写入文件",
+                "response": {
+                    "status": "success",
+                    "message": "文件内容已覆盖写入: E:/path/to/file.txt",
+                    "file_path": "E:/path/to/file.txt"
+                }
+            }
+        ]
     },
     {
         "name": "create_file",
-        "description": "创建新的文本文件（如果文件已存在，则根据overwrite参数决定是否覆盖）",
+        "description": "创建新的文本文件（跨平台支持，自动处理路径差异）",
         "parameters": {
             "file_path": {
                 "type": "string",
-                "description": "文件绝对路径"
+                "description": "文件的绝对路径"
             },
             "content": {
                 "type": "string",
-                "description": "文件内容"
+                "description": "要写入的文本内容"
             },
             "overwrite": {
                 "type": "boolean",
-                "description": "如果文件已存在，是否覆盖",
+                "description": "是否覆盖已存在文件",
                 "default": false
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功创建文件",
+                "response": {
+                    "status": "success",
+                    "message": "文件创建成功: {file_path}",
+                    "file_path": "{file_path}"
+                }
+            },
+            {
+                "scenario": "覆盖已存在文件",
+                "response": {
+                    "status": "success",
+                    "message": "文件覆盖成功: {file_path}",
+                    "file_path": "{file_path}"
+                }
+            }
+        ]
     },
     {
         "name": "create_multiple_files",
@@ -51,6 +103,10 @@
                 "description": "文件列表，每个文件包含路径和内容",
                 "items": {
                     "type": "object",
+                    "required": [
+                        "path",
+                        "content"
+                    ],
                     "properties": {
                         "path": {
                             "type": "string",
@@ -58,12 +114,34 @@
                         },
                         "content": {
                             "type": "string",
-                            "description": "文件内容"
+                            "description": "要写入的文本内容"
                         }
                     }
                 }
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "全部创建成功",
+                "response": {
+                    "status": "success",
+                    "message": "创建完成: 3成功/0失败",
+                    "results": [
+                        {
+                            "file_path": "{file_path}",
+                            "status": "success",
+                            "message": "文件创建成功: {file_path}"
+                        },
+                        {
+                            "file_path": "{file_path}",
+                            "status": "success",
+                            "message": "文件创建成功: {file_path}"
+                        }
+                    ],
+                    "platform": "{os_name}"
+                }
+            }
+        ]
     },
     {
         "name": "read_file",
@@ -73,7 +151,25 @@
                 "type": "string",
                 "description": "文件绝对路径"
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功读取文件",
+                "response": {
+                    "status": "success",
+                    "message": "文件读取成功: {file_path}",
+                    "content": "{file_content}"
+                }
+            },
+            {
+                "scenario": "读取空文件",
+                "response": {
+                    "status": "success",
+                    "message": "文件读取成功: {file_path}",
+                    "content": ""
+                }
+            }
+        ]
     },
     {
         "name": "list_directory",
@@ -83,21 +179,69 @@
                 "type": "string",
                 "description": "目录绝对路径"
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功列出目录",
+                "response": {
+                    "status": "success",
+                    "path": "{目录路径}",
+                    "files": [
+                        {
+                            "name": "example.txt",
+                            "absolute_path": "{目录路径}/example.txt",
+                            "is_hidden": false
+                        }
+                    ],
+                    "directories": [
+                        {
+                            "name": "documents",
+                            "absolute_path": "{目录路径}/documents",
+                            "is_hidden": false
+                        }
+                    ],
+                    "hidden_files": [
+                        {
+                            "name": ".hidden_file",
+                            "absolute_path": "{目录路径}/.hidden_file",
+                            "is_hidden": true
+                        }
+                    ],
+                    "hidden_directories": [
+                        {
+                            "name": ".config",
+                            "absolute_path": "{目录路径}/.config",
+                            "is_hidden": true
+                        }
+                    ],
+                    "platform": "nt"
+                }
+            }
+        ]
     },
     {
         "name": "delete_file",
-        "description": "删除指定绝对路径的文本文件",
+        "description": "删除指定路径的文件",
         "parameters": {
             "file_path": {
                 "type": "string",
-                "description": "文件绝对路径"
+                "description": "文件路径（支持格式：绝对路径、用户目录缩写如~/documents、网络路径）"
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功删除文件",
+                "response": {
+                    "status": "success",
+                    "message": "文件删除成功: {file_path}",
+                    "file_path": "{file_path}"
+                }
+            }
+        ]
     },
     {
         "name": "delete_multiple_files",
-        "description": "删除多个文本文件（支持绝对路径操作）",
+        "description": "删除多个文件（支持绝对路径操作）",
         "parameters": {
             "file_paths": {
                 "type": "array",
@@ -106,12 +250,56 @@
                     "type": "string"
                 }
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "批量删除成功",
+                "response": {
+                    "status": "completed",
+                    "message": "删除完成: 3成功/0失败",
+                    "results": [
+                        {
+                            "file_path": "{file_path}",
+                            "status": "success",
+                            "message": "文件删除成功: {file_path}"
+                        },
+                        {
+                            "file_path": "{file_path}",
+                            "status": "success",
+                            "message": "文件删除成功: {file_path}"
+                        }
+                    ],
+                    "platform": "{os_name}"
+                }
+            }
+        ]
     },
     {
         "name": "system_info",
         "description": "获取系统信息，包括用户名、桌面路径等系统路径",
-        "parameters": {}
+        "parameters": {},
+        "response_examples": [
+            {
+                "scenario": "成功获取系统信息",
+                "response": {
+                    "status": "success",
+                    "message": "成功获取系统信息",
+                    "username": "{username}",
+                    "computer_name": "{computer_name}",
+                    "paths": {
+                        "home": "{home_path}",
+                        "desktop": "{desktop_path}",
+                        "documents": "{documents_path}",
+                        "downloads": "{downloads_path}"
+                    },
+                    "platform": {
+                        "system": "{os_name}",
+                        "release": "{os_release}",
+                        "version": "{os_version}"
+                    }
+                }
+            }
+        ]
     },
     {
         "name": "python_interpreter",
@@ -119,9 +307,35 @@
         "parameters": {
             "code": {
                 "type": "string",
-                "description": "Python代码内容，请保留并加入空格等符号，同时保留全部的缩进，不保留空格运行将会报错"
+                "description": "需要执行的Python代码内容（必须保留所有空格和缩进，否则会报错）"
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功执行简单脚本",
+                "response": {
+                    "status": "success",
+                    "output": "Hello World\n",
+                    "return_code": 0
+                }
+            },
+            {
+                "scenario": "成功执行计算脚本",
+                "response": {
+                    "status": "success",
+                    "output": "Sum: 15\nAverage: 3.0\n",
+                    "return_code": 0
+                }
+            },
+            {
+                "scenario": "成功执行文件操作",
+                "response": {
+                    "status": "success",
+                    "output": "File created: temp_file.txt\n",
+                    "return_code": 0
+                }
+            }
+        ]
     },
     {
         "name": "image_recognition",
@@ -137,9 +351,29 @@
             },
             "prompt_override": {
                 "type": "string",
-                "description": "可选，覆盖默认的分析图片的提示词，可以自定义更专注于分析图片的某一处内容"
+                "description": "可选，覆盖默认的分析图片的提示词"
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功分析本地图片",
+                "response": {
+                    "status": "success",
+                    "message": "图片分析成功",
+                    "analysis": "图片内容分析结果...",
+                    "image_source": "file"
+                }
+            },
+            {
+                "scenario": "成功分析Base64图片",
+                "response": {
+                    "status": "success",
+                    "message": "图片分析成功",
+                    "analysis": "图片内容分析结果...",
+                    "image_source": "base64"
+                }
+            }
+        ]
     },
     {
         "name": "search_bing",
@@ -164,7 +398,33 @@
                 "description": "是否获取网页内容摘要（最多600字符）",
                 "default": true
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功获取搜索结果",
+                "response": {
+                    "status": "success",
+                    "message": "成功获取Bing搜索结果，共3条",
+                    "query": "{query}",
+                    "page_title": "Bing搜索 - {query}",
+                    "page_url": "https://www.bing.com/search?q={query}",
+                    "results": [
+                        {
+                            "title": "示例结果1",
+                            "url": "https://example.com/result1",
+                            "description": "相关描述内容...",
+                            "page_content": "网页内容摘要（最多600字符）..."
+                        },
+                        {
+                            "title": "示例结果2",
+                            "url": "https://example.com/result2",
+                            "description": "相关描述内容...",
+                            "page_content": "网页内容摘要（最多600字符）..."
+                        }
+                    ]
+                }
+            }
+        ]
     },
     {
         "name": "search_baidu",
@@ -189,7 +449,33 @@
                 "description": "是否获取网页内容摘要（最多600字符）",
                 "default": true
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功获取搜索结果",
+                "response": {
+                    "status": "success",
+                    "message": "成功获取百度搜索结果，共3条",
+                    "query": "{query}",
+                    "page_title": "百度搜索 - {query}",
+                    "page_url": "https://www.baidu.com/s?wd={query}",
+                    "results": [
+                        {
+                            "title": "示例结果1",
+                            "url": "https://example.com/result1",
+                            "description": "相关描述内容...",
+                            "page_content": "网页内容摘要（最多600字符）..."
+                        },
+                        {
+                            "title": "示例结果2",
+                            "url": "https://example.com/result2",
+                            "description": "相关描述内容...",
+                            "page_content": "网页内容摘要（最多600字符）..."
+                        }
+                    ]
+                }
+            }
+        ]
     },
     {
         "name": "search_google",
@@ -214,6 +500,32 @@
                 "description": "是否获取网页内容摘要（最多600字符）",
                 "default": true
             }
-        }
+        },
+        "response_examples": [
+            {
+                "scenario": "成功获取搜索结果",
+                "response": {
+                    "status": "success",
+                    "message": "成功获取谷歌搜索结果，共3条",
+                    "query": "{query}",
+                    "page_title": "Google - {query}",
+                    "page_url": "https://www.google.com/search?q={query}",
+                    "results": [
+                        {
+                            "title": "示例结果1",
+                            "url": "https://example.com/result1",
+                            "description": "相关描述内容...",
+                            "page_content": "网页内容摘要（最多600字符）..."
+                        },
+                        {
+                            "title": "示例结果2",
+                            "url": "https://example.com/result2",
+                            "description": "相关描述内容...",
+                            "page_content": "网页内容摘要（最多600字符）..."
+                        }
+                    ]
+                }
+            }
+        ]
     }
 ]

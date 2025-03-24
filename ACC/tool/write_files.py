@@ -6,6 +6,7 @@
 
 import logging
 import os
+from pathlib import Path
 from typing import Dict, Any
 
 from ACC.tool.base import BaseTool, ToolRegistry
@@ -13,56 +14,72 @@ from ACC.tool.base import BaseTool, ToolRegistry
 logger = logging.getLogger(__name__)
 
 # 默认可操作的目录
-EXAMPLES_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    "examples",
-)
+EXAMPLES_DIR = Path(__file__).parent.parent.parent / "examples"
 
 
 class WriteFileTool(BaseTool):
-    """写入文件工具"""
+    """写入文件工具（支持Windows/Linux）"""
 
     def __init__(self):
-        """初始化写入文件工具"""
         super().__init__(
             name="write_file",
-            description="覆盖写入指定绝对路径的文本文件内容（警告：将覆盖文件的所有现有内容）",  # 修改描述
+            description="覆盖写入指定路径的文本文件内容（跨平台支持，自动处理路径差异）",
         )
 
-    def execute(self, file_path: str, content: str) -> Dict[str, Any]:
-        """执行写入文件操作
-
-        Args:
-            file_path: 文件绝对路径  # 参数说明修改
-            content: 要写入的文件内容（将覆盖原有内容）
-
-        Returns:
-            执行结果字典
-        """
+    def execute(self, **kwargs) -> Dict[str, Any]:
         try:
-            # 直接使用绝对路径（移除路径处理逻辑）
-            full_path = os.path.abspath(file_path)
+            # 参数兼容性处理
+            file_path = kwargs.get('file_path') or kwargs.get('path')
+            content = kwargs.get('content')
+
+            if not file_path:
+                return {
+                    "status": "error",
+                    "message": "缺少必要参数: file_path/path",
+                }
+            
+            if not content:
+                return {
+                    "status": "error",
+                    "message": "缺少必要参数: content",
+                }
+
+            # 使用Path处理路径
+            path = Path(file_path).expanduser().resolve()
+            
+            # 统一路径显示格式
+            display_path = str(path.as_posix())
+
+            # Linux/MacOS权限检查
+            if os.name != 'nt' and not os.access(path.parent, os.W_OK):
+                return {
+                    "status": "error",
+                    "message": f"无写入权限 ({'请使用sudo' if os.name == 'posix' else '请检查权限'}): {display_path}",
+                    "file_path": display_path,
+                }
 
             # 确保目录存在
-            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+            path.parent.mkdir(parents=True, exist_ok=True)
 
             # 写入文件（覆盖模式）
-            with open(full_path, "w", encoding="utf-8") as f:
-                f.write(content)
+            path.write_text(content, encoding="utf-8")
 
-            logger.info(f"写入文件成功: {full_path}")
-
+            logger.info(f"写入文件成功: {display_path}")
             return {
                 "status": "success",
-                "message": f"文件内容已覆盖写入: {full_path}",  # 返回绝对路径
-                "file_path": full_path,  # 返回绝对路径
+                "message": f"文件内容已覆盖写入: {display_path}",
+                "file_path": display_path,
             }
+        except PermissionError as e:
+            error_msg = f"权限不足 ({'请使用管理员权限' if os.name == 'nt' else '请使用sudo'}): {display_path}"
+            logger.error(error_msg)
+            return {"status": "error", "message": error_msg}
         except Exception as e:
             logger.error(f"写入文件失败: {e}")
             return {
                 "status": "error",
                 "message": f"写入文件失败: {str(e)}",
-                "file_path": full_path,  # 返回绝对路径
+                "file_path": display_path,
             }
 
 

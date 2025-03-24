@@ -1,6 +1,6 @@
 """执行命令工具
 
-该模块提供了执行命令的工具，允许AI执行bash/cmd命令。
+该模块提供了执行命令的工具，允许AI执行cmd命令或linux命令。
 所有命令执行操作都应通过该工具进行，以确保安全性和一致性。
 """
 
@@ -10,6 +10,7 @@ import platform
 import logging
 import shlex
 import locale
+from pathlib import Path  # 添加 Path 导入
 from typing import Dict, Any, Optional
 
 from ACC.tool.base import BaseTool
@@ -41,7 +42,9 @@ class ExecuteCommandTool(BaseTool):
         """
         # 从kwargs中提取参数
         command = kwargs.get("command")
-        working_dir = kwargs.get("working_dir", os.getcwd())  # 新增参数
+        
+        # 修改工作目录处理
+        working_dir = kwargs.get("working_dir", os.getcwd())
         timeout = kwargs.get("timeout", 30)
 
         # 验证必要参数
@@ -53,50 +56,50 @@ class ExecuteCommandTool(BaseTool):
                 "stdout": "",
                 "stderr": "Missing required parameter: command",
                 "command": command,
-                "working_dir": working_dir,  # 返回绝对路径
+                "working_dir": str(working_dir),  # 转换为字符串
             }
 
         try:
-            # 处理工作目录为绝对路径
-            abs_working_dir = os.path.abspath(working_dir)
-
+            # 使用 Path 处理工作目录
+            work_path = Path(working_dir).expanduser().resolve()
+            abs_working_dir = str(work_path)  # 获取绝对路径字符串
+            
             # 确保目录存在
-            os.makedirs(abs_working_dir, exist_ok=True)
-
-            # 根据操作系统选择不同的命令执行方式
+            work_path.mkdir(parents=True, exist_ok=True)
+            
             current_os = platform.system()
+            
+            # 统一环境变量处理
+            env = os.environ.copy()
+            env["PATH"] = os.environ["PATH"]
+            
+            # 跨平台命令处理
+            if current_os == "Windows":
+                # 处理Windows路径格式
+                command = str(Path(command))  # 使用 Path 处理命令中的路径
+                args = command
+                shell = True
+                encoding = locale.getpreferredencoding()
+            else:
+                # Linux/MacOS下保持原生路径格式
+                command = command.replace('\\', '/')
+                args = ["/bin/bash", "-c", command]
+                shell = False
+                encoding = "utf-8"
 
-            # 记录执行的命令和目录
             logger.info(f"在目录 {abs_working_dir} 执行命令: {command}")
 
-            # 获取系统默认编码
-            system_encoding = locale.getpreferredencoding()
-            logger.debug(f"系统默认编码: {system_encoding}")
-
-            # 执行命令（修改cwd参数为abs_working_dir）
-            if current_os == "Windows":
-                # 在Windows上，使用系统默认编码
-                process = subprocess.Popen(
-                    command,
-                    shell=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    cwd=abs_working_dir,  # 使用绝对路径
-                    text=True,
-                    encoding=system_encoding,  # 使用系统默认编码
-                    errors="replace",
-                )
-            else:
-                args = shlex.split(command)
-                process = subprocess.Popen(
-                    args,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    cwd=abs_working_dir,  # 使用绝对路径
-                    text=True,
-                    encoding="utf-8",
-                    errors="replace",
-                )
+            process = subprocess.Popen(
+                args,
+                shell=shell,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                cwd=abs_working_dir,
+                env=env,
+                text=True,
+                encoding=encoding,
+                errors="replace",
+            )
 
             # 等待命令执行完成，设置超时时间
             stdout, stderr = process.communicate(timeout=timeout)

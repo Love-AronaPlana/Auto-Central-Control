@@ -11,67 +11,34 @@ import tempfile
 import uuid
 import re
 import chardet
+import sys
 from typing import Dict, Any
 
 from ACC.tool.base import BaseTool
 
 logger = logging.getLogger(__name__)
 
-# 获取examples目录的绝对路径
-EXAMPLES_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    "examples",
-)
+# 修改路径生成方式，使用Path对象增强跨平台兼容性
+from pathlib import Path
 
+EXAMPLES_DIR = Path(__file__).resolve().parent.parent.parent / "examples"
 
 def add_encoding_handling(code: str) -> str:
-    """添加编码处理代码
-    
-    在Python代码中添加统一使用utf-8编码的功能
-    
-    Args:
-        code: 原始Python代码
-        
-    Returns:
-        添加了编码处理的Python代码
-    """
-    # 添加编码检测函数
-    encoding_detection_code = """
-# 添加编码处理函数
-def detect_encoding(file_path):
-    \"\"\"检测文件编码
-    
-    Args:
-        file_path: 文件路径
-        
-    Returns:
-        检测到的编码，如果检测失败则返回'utf-8'
-    \"\"\"
-    try:
-        with open(file_path, 'rb') as f:
-            result = chardet.detect(f.read())
-        if result['confidence'] > 0.7:
-            return result['encoding']
-        return 'utf-8'  # 默认使用utf-8
-    except Exception as e:
-        print(f"检测编码时出错: {e}")
-        return 'utf-8'
-"""
-    
-    # 检查代码中是否已经定义了detect_encoding函数
-    if "def detect_encoding" not in code:
-        # 在代码开头添加编码检测函数
-        code = encoding_detection_code + "\n" + code
-    
-    # 替换所有的open调用，添加utf-8编码
+    # 统一处理不同平台的路径分隔符
     code = re.sub(
-        r'open\(([^,]+),\s*[\'"]r[\'"](,\s*encoding=[\'"][^\'"][\'"]\s*)?\)',
-        r'open(\1, "r", encoding="utf-8")',
-        code
+        r'open\(([^,]+),\s*[\'"]r[\'"](,\s*encoding=[\'"][^\'"]+[\'"])?\)',
+        r'open(\1, "r", encoding="utf-8"\2)',
+        code,
+        flags=re.MULTILINE
     )
-    
+    # 跨平台路径标准化处理
+    code = re.sub(
+        r'(with\s+open\(.*?)(\\|/){2,}',
+        r'\1os.path.normpath(',
+        code,
+        flags=re.MULTILINE
+    )
     return code
-
 
 class PythonInterpreterTool(BaseTool):
     """Python解释器工具"""
@@ -97,16 +64,28 @@ class PythonInterpreterTool(BaseTool):
         
         # 生成唯一的临时文件名
         temp_filename = f"temp_script_{uuid.uuid4().hex}.py"
-        temp_filepath = os.path.join(EXAMPLES_DIR, temp_filename)
-
+        temp_filepath = EXAMPLES_DIR / temp_filename  # 使用Path对象替代os.path.join
+        
         try:
-            # 确保examples目录存在
-            os.makedirs(EXAMPLES_DIR, exist_ok=True)
-
-            # 写入Python代码到临时文件
-            with open(temp_filepath, "w", encoding="utf-8") as f:
+            # 跨平台目录创建
+            EXAMPLES_DIR.mkdir(parents=True, exist_ok=True)
+            
+            # 统一使用Path对象进行文件操作
+            with temp_filepath.open("w", encoding="utf-8") as f:
                 f.write(processed_code)
 
+            # 设置环境变量
+            env = os.environ.copy()
+            env["PYTHONIOENCODING"] = "utf-8"
+            
+            # 执行Python脚本（删除重复的run调用）
+            result = subprocess.run(
+                [sys.executable, str(temp_filepath)],
+                capture_output=True,
+                env=env,
+                text=False  # 使用二进制模式，让 chardet 正确检测编码
+            )
+            
             logger.info(f"临时Python脚本已创建: {temp_filepath}")
 
             # 执行Python脚本部分
@@ -183,10 +162,10 @@ class PythonInterpreterTool(BaseTool):
                 "error": str(e)
             }
         finally:
-            # 清理临时文件
+            # 清理临时文件（统一使用 Path）
             try:
-                if os.path.exists(temp_filepath):
-                    os.remove(temp_filepath)
+                if temp_filepath.exists():
+                    temp_filepath.unlink()
                     logger.info(f"临时Python脚本已删除: {temp_filepath}")
             except Exception as e:
                 logger.error(f"删除临时Python脚本时发生错误: {str(e)}")

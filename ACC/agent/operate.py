@@ -451,6 +451,60 @@ class OperateAgent(BaseAgent):
                     result["error"] = "未指定工具名称"
                     result["success"] = False
 
+            # 在run方法中添加对search_tool的处理
+            elif action_type == "search_tool":
+                # 处理工具查询
+                tool_name = result.get("use_tool")
+                if tool_name:
+                    tool_info = self._get_tool_info(tool_name)
+                    result["tool_info"] = tool_info
+                    
+                    # 保存助手消息到操作历史记录
+                    operation_history.append({"role": "assistant", "content": response.get("content", "")})
+                    
+                    # 保存工具信息到操作历史记录
+                    operation_history.append(
+                        {"role": "tool_result", "content": json.dumps(tool_info, ensure_ascii=False)}
+                    )
+                    
+                    # 保存操作历史记录
+                    self._save_operation_history(task_number, operation_history)
+                    
+                    # 重置消息列表
+                    self.reset_messages()
+                    
+                    # 添加系统提示 - 只添加一次系统消息
+                    system_added = False  # 重置系统消息标志
+                    for msg in operation_history:
+                        if not isinstance(msg, dict):
+                            continue
+                            
+                        role = msg.get("role", "")
+                        content = msg.get("content", "")
+                        
+                        # 只添加一次系统提示
+                        if role == "system":
+                            if not system_added:
+                                self.messages.append(msg)
+                                system_added = True
+                        # 添加其他消息类型
+                        elif role in ["tool_result", "assistant"]:
+                            self.messages.append(msg)
+                    
+                    # 构建新的提示词，包含工具信息
+                    search_tool_prompt = SEARCH_TOOL_PROMPT.format(
+                        tool_info=json.dumps(tool_info, ensure_ascii=False, indent=2)
+                    )
+                    self.add_message("user", search_tool_prompt)
+                    
+                    # 发送请求
+                    logger.info(f"🔄 正在向LLM发送工具查询请求: {tool_name}...")
+                    response = self.send_to_llm()
+                    
+                    # 解析响应
+                    result = self.parse_json_response(response)
+                    result["success"] = False  # 工具查询后需要继续操作
+
             elif action_type == "history":
                 # 处理历史记录请求
                 pull_history = result.get("pull_history", "")
@@ -703,3 +757,31 @@ class OperateAgent(BaseAgent):
             import traceback
             logger.debug(f"获取操作历史记录异常堆栈: {traceback.format_exc()}")
             return {"error": f"获取操作历史记录失败: {str(e)}"}
+
+    def _get_tool_info(self, tool_name: str) -> Dict[str, Any]:
+        """获取指定工具的详细信息
+        
+        Args:
+            tool_name: 工具名称
+            
+        Returns:
+            工具详细信息
+        """
+        try:
+            tools_config = get_tools_config()
+            for tool in tools_config:
+                if tool.get("name") == tool_name:
+                    return {
+                        "status": "success",
+                        "tool_info": json.dumps(tool, ensure_ascii=False, indent=2)
+                    }
+            return {
+                "status": "error",
+                "message": f"未找到工具: {tool_name}"
+            }
+        except Exception as e:
+            logger.error(f"获取工具信息失败: {e}")
+            return {
+                "status": "error",
+                "message": f"获取工具信息失败: {str(e)}"
+            }

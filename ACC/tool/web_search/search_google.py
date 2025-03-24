@@ -9,6 +9,7 @@ import os
 import platform
 import time
 from typing import Dict, Any
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -33,119 +34,53 @@ class SearchGoogleTool(BaseTool):
         )
 
     def _get_chromedriver_path(self) -> str:
-        """获取适合当前操作系统的ChromeDriver路径
-
-        Returns:
-            ChromeDriver可执行文件的绝对路径
-        """
-        base_dir = os.path.dirname(os.path.abspath(__file__))
+        base_dir = Path(__file__).parent
         
         if platform.system() == "Windows":
-            chromedriver_dir = os.path.join(base_dir, "chromedriver", "chromedriver-win64")
-            chromedriver_path = os.path.join(chromedriver_dir, "chromedriver.exe")
+            chromedriver_dir = base_dir / "chromedriver" / "chromedriver-win64"
+            chromedriver_path = chromedriver_dir / "chromedriver.exe"
         else:  # Linux或其他系统
-            chromedriver_dir = os.path.join(base_dir, "chromedriver", "chromedriver-linux64")
-            chromedriver_path = os.path.join(chromedriver_dir, "chromedriver")
+            chromedriver_dir = base_dir / "chromedriver" / "chromedriver-linux64"
+            chromedriver_path = chromedriver_dir / "chromedriver"
         
         logger.debug(f"ChromeDriver路径: {chromedriver_path}")
-        return chromedriver_path
-    
-    def _get_page_content_with_browser(self, url: str, driver, timeout: int = 30, max_chars: int = 600) -> str:
-        """使用浏览器获取网页内容
-
-        Args:
-            url: 网页URL
-            driver: WebDriver实例
-            timeout: 等待页面加载的超时时间（秒）
-            max_chars: 最大字符数，默认600
-
-        Returns:
-            网页内容摘要，超过max_chars会被截断
-        """
-        try:
-            # 保存当前窗口句柄
-            original_window = driver.current_window_handle
-            
-            # 打开新标签页
-            driver.execute_script("window.open('');")
-            
-            # 切换到新标签页
-            driver.switch_to.window(driver.window_handles[-1])
-            
-            # 访问URL
-            logger.info(f"正在访问网页: {url}")
-            driver.get(url)
-            
-            # 等待页面加载完成
-            logger.info("等待页面完全加载...")
-            time.sleep(2)
-            
-            # 等待body元素加载
-            WebDriverWait(driver, timeout).until(
-                EC.presence_of_element_located((By.TAG_NAME, "body"))
-            )
-            
-            # 给页面一些时间完全加载
-            logger.info("页面已加载，等待2秒以确保页面完全渲染...")
-            time.sleep(2)
-            
-            # 获取页面文本内容
-            body_element = driver.find_element(By.TAG_NAME, "body")
-            text = body_element.text
-            
-            # 清理文本（移除多余空格）
-            text = ' '.join(text.split())
-            
-            # 截断文本
-            if len(text) > max_chars:
-                text = text[:max_chars] + "..."
-            
-            # 关闭当前标签页并切回原标签页
-            driver.close()
-            driver.switch_to.window(original_window)
-            
-            return text
-        except Exception as e:
-            logger.warning(f"使用浏览器获取网页内容失败: {e}")
-            
-            # 尝试切回原标签页
-            try:
-                if driver.current_window_handle != original_window:
-                    driver.close()
-                    driver.switch_to.window(original_window)
-            except:
-                pass
-                
-            return "无法获取网页内容"
+        return str(chromedriver_path)  # 返回字符串路径，因为 Service 需要字符串
 
     def execute(self, query: str, max_results: int = 5, timeout: int = 30, fetch_content: bool = True) -> Dict[str, Any]:
-        """执行谷歌搜索操作
-
-        Args:
-            query: 搜索查询内容
-            max_results: 返回的最大结果数量，默认为5
-            timeout: 等待页面加载的超时时间（秒），默认为30秒
-            fetch_content: 是否获取网页内容，默认为True
-
-        Returns:
-            执行结果字典，包含搜索结果
-        """
         driver = None
         try:
-            # 设置Chrome选项
+            # 跨平台Chrome选项配置
             chrome_options = Options()
-            chrome_options.add_argument("--disable-extensions")  # 禁用扩展
-            # chrome_options.add_argument("--disable-gpu")  # 禁用GPU加速
-            chrome_options.add_argument("--no-sandbox")  # 禁用沙盒模式
+            chrome_options.add_argument("--disable-extensions")
+            chrome_options.add_argument("--no-sandbox")  # 所有系统都需要
             
+            # 平台特定配置
+            if platform.system() == "Linux":
+                chrome_options.add_argument("--headless=new")  # Linux无头模式
+                chrome_options.add_argument("--disable-gpu")
+                chrome_options.add_argument("--remote-debugging-port=9222")
+            else:
+                chrome_options.add_argument("--disable-gpu")  # Windows启用GPU加速
+
             # 获取ChromeDriver路径
             chromedriver_path = self._get_chromedriver_path()
+            
+            # Linux系统检查执行权限
+            if platform.system() == "Linux":
+                chromedriver = Path(chromedriver_path)
+                if not os.access(chromedriver, os.X_OK):
+                    logger.warning("检测到Linux系统，正在尝试添加ChromeDriver执行权限")
+                    chromedriver.chmod(0o755)
             
             # 创建Service对象
             service = Service(executable_path=chromedriver_path)
             
             # 创建WebDriver
-            driver = webdriver.Chrome(service=service, options=chrome_options)
+            driver = webdriver.Chrome(
+                service=service,
+                options=chrome_options,
+                service_args=['--verbose'] if platform.system() == 'Linux' else []
+            )
             
             # 设置隐式等待时间
             driver.implicitly_wait(10)
